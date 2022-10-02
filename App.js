@@ -1,20 +1,39 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StatusBar } from "expo-status-bar";
+import { NativeBaseProvider, Text, Box, extendTheme, View } from "native-base";
+import { useReducer } from "react";
+import { useColorScheme } from "react-native";
+import {
+  GlobalContext,
+  globalReducer,
+  initState,
+  initialState,
+} from "./contexts/global";
+import darkModeTheme from "./theming/dark";
+import Login from "./views/Login";
 
-export default function App() {
+const Stack = createNativeStackNavigator();
+const App = () => {
+  const colorScheme = useColorScheme();
+  const [state, dispatch] = useReducer(globalReducer, initialState, initState);
+  const theme = extendTheme(colorScheme === "dark" ? darkModeTheme : {});
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <GlobalContext.Provider value={{ state, dispatch }}>
+      <NativeBaseProvider theme={theme}>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="Login" component={Login} />
+          </Stack.Navigator>
+        </NavigationContainer>
+        <StatusBar></StatusBar>
+      </NativeBaseProvider>
+    </GlobalContext.Provider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;

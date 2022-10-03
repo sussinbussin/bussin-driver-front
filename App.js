@@ -14,6 +14,7 @@ import darkModeTheme from "./theming/dark";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
+import Profile from "./views/Profile";
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -33,6 +34,7 @@ const App = () => {
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="Profile" component={Profile} />
           </Stack.Navigator>
         </NavigationContainer>
         <StatusBar></StatusBar>

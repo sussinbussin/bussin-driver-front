@@ -11,11 +11,11 @@ import { useContext, useRef, useState, useEffect } from "react";
 
 const Home = ({ navigation }) => {
   const { state, dispatch } = useContext(GlobalContext);
-  const { location, setLocation } = useState();
+  const [location, setLocation] = useState();
   const map = useRef();
 
   useEffect(() => {
-    async () => {
+    (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         return;
@@ -25,8 +25,8 @@ const Home = ({ navigation }) => {
         enableHighAccuracy: true,
         timeInterval: 5,
       });
-      setLocation(location);
-    };
+      setLocation(location.coords);
+    })();
   }, []);
 
   return (
@@ -37,12 +37,25 @@ const Home = ({ navigation }) => {
         alignItems: "center",
       }}
     >
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        customMapStyle={mapStyle}
-        ref={map}
-        showsUserLocation={true}
-      ></MapView>
+      {location && (
+        <MapView
+          style={StyleSheet.absoluteFill}
+          provider={PROVIDER_GOOGLE}
+          customMapStyle={mapStyle}
+          ref={map}
+          showsUserLocation={true}
+          initialCamera={{
+            center: {
+              latitude: location.latitude,
+              longitude: location.longitude,
+            },
+            pitch: 0,
+            heading: 0,
+            zoom: 15,
+            altitude: location.altitude,
+          }}
+        ></MapView>
+      )}
       <HomeTopBar />
     </View>
   );

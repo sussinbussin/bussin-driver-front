@@ -29,14 +29,20 @@ const Login = ({ navigation }) => {
   const handleUsername = (value) => setUsername(value);
 
   const submit = async () => {
+    //for development purposes
+    if(!state.flags.requireLogin){
+      navigation.navigate("Home");
+    }
     if (username == "" || password == "") {
       //TODO: handle invalid input
+      return;
     }
     const token = await loginUser();
     console.log(token);
     if (token.error) {
       setPassword("");
-      return;
+      //Temp comment for development
+      //return;
     }
     await SecureStore.setItemAsync(
       "token",

@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 const HomeTopBar = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  //TODO: handle scheduled rides
   const handleNavigate = () => {
     navigation.navigate("Profile");
   };
@@ -32,7 +33,13 @@ const HomeTopBar = () => {
           />
         </Pressable>
       </Box>
-      <VStack style={{ height: 50, flex: 1 }}>
+      <VStack
+        style={{
+          backgroundColor: 0,
+          height: 50,
+          flex: 1,
+        }}
+      >
         <Heading style={{ flex: 1, textAlign: "center" }}>Bussin.</Heading>
         <Text fontSize="xs" style={{ flex: 1, textAlign: "center" }}>
           Driver

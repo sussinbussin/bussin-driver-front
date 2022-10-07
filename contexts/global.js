@@ -5,6 +5,7 @@ const flags = {
   requireLogin: false,
   register: true,
   profile: true,
+  registerName: true,
 };
 
 const initialState = {

@@ -102,9 +102,9 @@ const Register = ({ navigation }) => {
 
             <Button
               // TODO: sign up with email
-              onPress={() => {
-                console.log("email")
-              }}
+              // onPress={() => {
+              //   console.log("email")
+              // }}
               w="100%"
               style={{ marginTop: 30 }}
               variant="outline"
@@ -114,9 +114,9 @@ const Register = ({ navigation }) => {
 
             <Button
               // TODO: sign up with gmail?
-              onPress={() => {
-                console.log("gmail")
-              }}
+              // onPress={() => {
+              //   console.log("gmail")
+              // }}
               w="100%"
               style={{ marginTop: 22 }}
               variant="outline"

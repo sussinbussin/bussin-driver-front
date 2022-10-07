@@ -15,6 +15,7 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
 import Profile from "./views/Profile";
+import RegisterName from "./views/RegisterName";
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name = "RegisterName" component={RegisterName} />
           </Stack.Navigator>
         </NavigationContainer>
         <StatusBar></StatusBar>

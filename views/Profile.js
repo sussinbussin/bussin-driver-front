@@ -28,9 +28,9 @@ const Profile = () => {
     <View>
       <TopBarBack></TopBarBack>
       <Pressable
-        onPress={() => {
-          console.log("edit profile");
-        }}
+        // onPress={() => {
+        //   console.log("edit profile");
+        // }}
       >
         <Flex style={{ marginTop: 5, marginBottom: 5 }} flexDirection="row">
           <View>
@@ -87,9 +87,9 @@ const Profile = () => {
 
           <View style={{ width: "100%" }}>
             <Pressable
-              onPress={() => {
-                console.log("scheduled");
-              }}
+              // onPress={() => {
+              //   console.log("scheduled");
+              // }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Scheduled</Text>
@@ -115,9 +115,9 @@ const Profile = () => {
               }}
             />
             <Pressable
-              onPress={() => {
-                console.log("ride stats");
-              }}
+              // onPress={() => {
+              //   console.log("ride stats");
+              // }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Ride statistics</Text>
@@ -143,9 +143,9 @@ const Profile = () => {
               }}
             />
             <Pressable
-              onPress={() => {
-                console.log("saved");
-              }}
+              // onPress={() => {
+              //   console.log("saved");
+              // }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Saved Places</Text>
@@ -172,9 +172,9 @@ const Profile = () => {
             />
 
             <Pressable
-              onPress={() => {
-                console.log("emergency");
-              }}
+              // onPress={() => {
+              //   console.log("emergency");
+              // }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Emergency Contacts</Text>
@@ -201,9 +201,9 @@ const Profile = () => {
             />
 
             <Pressable
-              onPress={() => {
-                console.log("payment settings");
-              }}
+              // onPress={() => {
+              //   console.log("payment settings");
+              // }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Payment Settings</Text>
@@ -237,9 +237,9 @@ const Profile = () => {
 
           <View style={{ width: "100%" }}>
             <Pressable
-              onPress={() => {
-                console.log("halp");
-              }}
+              // onPress={() => {
+              //   console.log("halp");
+              // }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Help Centre</Text>
@@ -265,9 +265,9 @@ const Profile = () => {
             />
 
             <Pressable
-              onPress={() => {
-                console.log("settings");
-              }}
+              // onPress={() => {
+              //   console.log("settings");
+              // }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Settings</Text>
@@ -294,9 +294,9 @@ const Profile = () => {
             />
 
             <Pressable
-              onPress={() => {
-                console.log("feedback");
-              }}
+              // onPress={() => {
+              //   console.log("feedback");
+              // }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Feedback</Text>

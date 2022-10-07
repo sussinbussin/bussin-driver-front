@@ -12,6 +12,8 @@ import {
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
 import TopBar from "../components/TopBar";
+import { useLoginAPI } from "../api/LoginApi";
+import * as SecureStore from "expo-secure-store";
 
 const Login = ({ navigation }) => {
   //used for feature toggling
@@ -21,13 +23,25 @@ const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const { loginUser } = useLoginAPI(username, password);
+
   const handlePassword = (value) => setPassword(value);
   const handleUsername = (value) => setUsername(value);
 
-  const submit = () => {
+  const submit = async () => {
     if (username == "" || password == "") {
       //TODO: handle invalid input
     }
+    const token = await loginUser();
+    console.log(token);
+    if (token.error) {
+      setPassword("");
+      return;
+    }
+    await SecureStore.setItemAsync(
+      "token",
+      token.AuthenticationResult.AccessToken
+    );
     navigation.navigate("Home");
   };
 
@@ -61,6 +75,7 @@ const Login = ({ navigation }) => {
             <FormControl.Label>Password</FormControl.Label>
             <Input
               type="password"
+              value={password}
               placeholder="Password"
               onChangeText={handlePassword}
               variant="underlined"

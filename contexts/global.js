@@ -6,6 +6,7 @@ const flags = {
   register: true,
   profile: true,
   registerName: true,
+  scheduledRides: true,
 };
 
 const initialState = {

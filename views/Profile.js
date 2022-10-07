@@ -87,9 +87,9 @@ const Profile = () => {
 
           <View style={{ width: "100%" }}>
             <Pressable
-              // onPress={() => {
-              //   console.log("scheduled");
-              // }}
+              onPress={() => {
+                navigation.navigate("ScheduledRides");
+              }}
               flexDirection="row"
             >
               <Text style={{ fontSize: 15, flex: 7 }}>Scheduled</Text>

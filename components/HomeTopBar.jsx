@@ -7,6 +7,9 @@ const HomeTopBar = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   //TODO: handle scheduled rides
+  const handleScheduled = () => {
+    navigation.navigate("ScheduledRides");
+  }
   const handleNavigate = () => {
     navigation.navigate("Profile");
   };
@@ -21,7 +24,7 @@ const HomeTopBar = () => {
       flexDirection="row"
     >
       <Box style={{ flex: 1, backgroundColor: 0 }}>
-        <Pressable onPress={handleNavigate}>
+        <Pressable onPress={handleScheduled}>
           <AntDesign
             name="calendar"
             size={28}

@@ -2,6 +2,7 @@ import { createContext } from "react";
 
 const flags = {
   login: true,
+  requireLogin: false,
 };
 
 const initialState = {

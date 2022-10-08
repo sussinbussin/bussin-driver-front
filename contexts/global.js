@@ -3,6 +3,10 @@ import { createContext } from "react";
 const flags = {
   login: true,
   requireLogin: false,
+  register: true,
+  profile: true,
+  registerName: true,
+  scheduledRides: true,
 };
 
 const initialState = {

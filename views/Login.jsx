@@ -13,11 +13,12 @@ import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
 import TopBar from "../components/TopBar";
 import { useLoginAPI } from "../api/LoginApi";
+import { useUserAPI } from "../api/UsersAPI";
 import * as SecureStore from "expo-secure-store";
 
 const Login = ({ navigation }) => {
   //used for feature toggling
-  const { state } = useContext(GlobalContext);
+  const { state, dispatch } = useContext(GlobalContext);
   if (!state.flags.login) return null;
 
   const [username, setUsername] = useState("");
@@ -29,25 +30,48 @@ const Login = ({ navigation }) => {
   const handleUsername = (value) => setUsername(value);
 
   const submit = async () => {
-    //for development purposes
-    if(!state.flags.requireLogin){
-      navigation.navigate("Home");
-    }
+    //for development
     if (username == "" || password == "") {
-      //TODO: handle invalid input
+      if (!state.flags.requireLogin) {
+        navigation.navigate("Home");
+      }
       return;
     }
-    const token = await loginUser();
-    console.log(token);
-    if (token.error) {
-      setPassword("");
-      //Temp comment for development
-      //return;
+
+    let { token, email } = await loginUser();
+    if (!token) {
+      //handle invalid user
+      console.log("Invalid user");
+      return;
     }
+
+    const { getUser } = useUserAPI(token.AuthenticationResult.IdToken, email);
+    let user = await getUser();
+    if (!user) {
+      //this one hong gan lo
+      return;
+    }
+
+    dispatch({ type: "SET_USER", payload: user });
+    dispatch({
+      type: "MODIFY_STAGE",
+      payload: {
+        ...state.stage,
+        locationSearch: {
+          text: `Where to, ${user.name}?`,
+        },
+      },
+    });
+    dispatch({
+      type: "SET_TOKEN",
+      payload: token.AuthenticationResult.IdToken,
+    });
+
     await SecureStore.setItemAsync(
-      "token",
-      token.AuthenticationResult.AccessToken
+      "idToken",
+      JSON.stringify(token.AuthenticationResult.IdToken)
     );
+    console.log(user);
     navigation.navigate("Home");
   };
 

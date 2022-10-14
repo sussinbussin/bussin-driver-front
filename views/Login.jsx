@@ -71,8 +71,14 @@ const Login = ({ navigation }) => {
       "idToken",
       JSON.stringify(token.AuthenticationResult.IdToken)
     );
-    console.log(user);
-    navigation.navigate("Home");
+
+    if(user.isDriver === true){
+      navigation.navigate("Home");
+    }
+    else{
+      //Tell the user they have to be a driver to use this app
+      //Create a driver account to continue
+    }
   };
 
   return (

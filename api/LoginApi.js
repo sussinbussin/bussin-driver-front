@@ -30,7 +30,6 @@ const useLoginAPI = (username, password) => {
         },
       });
       token = await res.json();
-      console.log(token);
       //TODO: data validation and error handling
       //this is dumb
       let authToken = token.AuthenticationResult.IdToken;

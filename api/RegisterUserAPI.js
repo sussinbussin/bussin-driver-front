@@ -1,24 +1,27 @@
 import { BACKEND_API_ENDPOINT } from "@env";
 import ky from "ky";
 
-const useRegisterUserAPI = (userCreationDTO) => {
+const useRegisterUserAPI = () => {
     const api = ky.create({
         prefixUrl: BACKEND_API_ENDPOINT,
       });
 
-    const createUser = async () => {
+    const createUser = async (userCreationDTO) => {
         let data = null;
         try {
-            const res = await api.post(`users/wCognito/create`);
+            console.log("Trying")
+            const res = await api.post(`users/wCognito/create`, {json: userCreationDTO});
             data = await res.json();
+            console.log("Resulting data: ")
             console.log(data);
             return data;
         } catch (error) {
+            console.log(error)
             return;
         }
     };
 
-    return { getUser };
+    return { createUser };
 };
 
 export { useRegisterUserAPI };

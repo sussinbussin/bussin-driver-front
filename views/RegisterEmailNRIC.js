@@ -23,10 +23,15 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
   const { state } = useContext(GlobalContext);
   if (!state.flags.registerName) return null;
 
+  const [name, setName] = useState("");
   const [nric, setNRIC] = useState("");
-  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
   const [dob, setDob] = useState(new Date());
+  const [userCreationDTO, setUserCreationDTO] = useState("");
+
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const { createUser } = useRegisterUserAPI(userCreationDTO);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -47,20 +52,27 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
     console.log(usernameValue)
     console.log(passwordValue)
     console.log(phoneNumValue)
+    console.log(nric)
+    console.log(name)
+    console.log(email)
     console.log(dob)
-    console.log(address)
 
-    // idk need update
-    return await useRegisterUserAPI(userCreationDTO)
-      .then(() => {
-        Alert.alert("yay");
-        return true;
-      })
-      .catch((error) => {
-        // TODO: check uniqueness etc etc
-        Alert.alert("boooo", error.message);
-        return false;
-      });
+    let userCreationDTO = {
+      "password": passwordValue,
+      "username": usernameValue,
+      "userDTO": {
+        "nric": nric,
+        "name": name,
+        "address": "place_id:ChIJ483Qk9YX2jERA0VOQV7d1tY",
+        "dob": "2000-10-09T00:46:18.784Z",
+        "mobile": phoneNumValue,
+        "email": email,
+        "isDriver": true
+      }
+    };
+    setUserCreationDTO(userCreationDTO);
+
+    return await createUser(userCreationDTO)
   };
 
   return (
@@ -89,12 +101,22 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
               size="lg"
             />
             <FormControl.Label style={{ marginTop: 15 }}>
-              Enter your address
+              Enter your name
             </FormControl.Label>
             <Input
-              value={address}
-              placeholder={"Address"}
-              onChangeText={(text) => setAddress(text)}
+              value={name}
+              placeholder={"Name"}
+              onChangeText={(text) => setName(text)}
+              variant="underlined"
+              size="lg"
+            />
+            <FormControl.Label style={{ marginTop: 15 }}>
+              Enter your email address
+            </FormControl.Label>
+            <Input
+              value={email}
+              placeholder={"Email@mail.com"}
+              onChangeText={(text) => setEmail(text)}
               variant="underlined"
               size="lg"
             />

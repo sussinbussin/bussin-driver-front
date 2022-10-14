@@ -14,31 +14,23 @@ import {
   import { useContext, useState } from "react";
   import { GlobalContext } from "../contexts/global";
   import { Alert, Parse } from "react-native";
+  import { useRegisterUserAPI } from "../api/RegisterUserAPI";
   import TopBar from "../components/TopBar";
   
-  const RegisterName = () => {
+  const RegisterName = ({navigation, route}) => {
     // for stuff like username, email, name, dob etc.
     const { state } = useContext(GlobalContext);
     if (!state.flags.registerName) return null;
   
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-  
-    const RegisterUser = async function () {
-      const usernameValue = username;
-      const passwordValue = password;
-  
-      // idk need update
-      return await Parse.User.signup(usernameValue, passwordValue)
-        .then(() => {
-          Alert.alert("yay");
-          return true;
-        })
-        .catch((error) => {
-          // TODO: check uniqueness etc etc
-          Alert.alert("boooo", error.message);
-          return false;
-        });
+
+    const submit = () => {
+      navigation.navigate("RegisterEmailNRIC", {
+        username: username,
+        password: password,
+        phoneNum: route.params.phoneNum,
+      })
     };
   
     return (
@@ -80,7 +72,9 @@ import {
   
               {/* can bring to set email or something */}
               <Button
-                onPress={RegisterUser}
+                onPress={() => {
+                  submit();
+                }}
                 w="100%"
                 style={{ marginTop: 30 }}
                 variant="outline"

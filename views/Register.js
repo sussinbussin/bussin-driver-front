@@ -35,9 +35,9 @@ const Register = ({ navigation }) => {
       // TODO: alert invalid number
     
     } else {
-      navigation.navigate("RegisterName")
-      // TODO: send to db
-
+      navigation.navigate("RegisterName", {
+        phoneNum: phoneNum,
+      })
     }
   };
 

@@ -16,6 +16,7 @@ import Login from "./views/Login";
 import Register from "./views/Register";
 import Profile from "./views/Profile";
 import RegisterName from "./views/RegisterName";
+import RegisterEmailNRIC from "./views/RegisterEmailNRIC";
 import ScheduledRides from "./views/ScheduledRides";
 
 const Stack = createNativeStackNavigator();
@@ -38,6 +39,7 @@ const App = () => {
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name = "RegisterName" component={RegisterName} />
+            <Stack.Screen name = "RegisterEmailNRIC" component={RegisterEmailNRIC} />
             <Stack.Screen name = "ScheduledRides" component={ScheduledRides} />
           </Stack.Navigator>
         </NavigationContainer>

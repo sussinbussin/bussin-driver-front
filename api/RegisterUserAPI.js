@@ -9,10 +9,8 @@ const useRegisterUserAPI = () => {
     const createUser = async (userCreationDTO) => {
         let data = null;
         try {
-            console.log("Trying")
-            const res = await api.post(`users/wCognito/create`, {json: userCreationDTO});
-            data = await res.json();
-            console.log("Resulting data: ")
+            const data = await api.post(`users/wCognito/create`, {json: userCreationDTO}).json();
+            console.log("Resulting user: ")
             console.log(data);
             return data;
         } catch (error) {

@@ -63,7 +63,7 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
         "dob": dob,
         "mobile": phoneNumValue,
         "email": emailValue,
-        "isDriver": true
+        "isDriver": false
       }
     };
     setUserCreationDTO(userCreationDTO);

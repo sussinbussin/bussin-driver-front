@@ -54,6 +54,13 @@ const Login = ({ navigation }) => {
       return;
     }
 
+    await SecureStore.setItemAsync(
+      "idToken",
+      JSON.stringify(token).replace(/['"]+/g, '')
+    );
+
+    if(user.isDriver === true){
+      
     dispatch({ type: "SET_USER", payload: user });
     dispatch({
       type: "MODIFY_STAGE",
@@ -68,18 +75,10 @@ const Login = ({ navigation }) => {
       type: "SET_TOKEN",
       payload: token,
     });
-
-    await SecureStore.setItemAsync(
-      "idToken",
-      JSON.stringify(token)
-    );
-
-    if(user.isDriver === true){
       navigation.navigate("Home");
     }
     else{
-      //Tell the user they have to be a driver to use this app
-      //Create a driver account to continue
+      navigation.navigate("RegisterDriver");
     }
   };
 

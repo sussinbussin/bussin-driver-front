@@ -68,9 +68,11 @@ const RegisterDriver = ({ navigation, route }) => {
         setUuid(await SecureStore.getItemAsync("uuid"));
         setDriverDTO(driverDTO);
 
-        await createDriver(driverDTO);
-
-        navigation.navigate("Home");
+        let driver = await createDriver(driverDTO);
+        console.log(driver)
+        if(driver){
+            navigation.navigate("Home");
+        }
     };
 
     return (

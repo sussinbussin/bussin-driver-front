@@ -38,20 +38,29 @@ const Login = ({ navigation }) => {
       return;
     }
 
-    let { token, email } = await loginUser();
+    let authNRes = await loginUser();
+    let token = authNRes.authToken;
+    let email = authNRes.email;
     if (!token) {
       //handle invalid user
       console.log("Invalid user");
       return;
     }
 
-    const { getUser } = useUserAPI(token.AuthenticationResult.IdToken, email);
+    const { getUser } = useUserAPI(token, email);
     let user = await getUser();
     if (!user) {
       //this one hong gan lo
       return;
     }
 
+    await SecureStore.setItemAsync(
+      "idToken",
+      JSON.stringify(token).replace(/['"]+/g, '')
+    );
+
+    if(user.isDriver === true){
+      
     dispatch({ type: "SET_USER", payload: user });
     dispatch({
       type: "MODIFY_STAGE",
@@ -64,20 +73,12 @@ const Login = ({ navigation }) => {
     });
     dispatch({
       type: "SET_TOKEN",
-      payload: token.AuthenticationResult.IdToken,
+      payload: token,
     });
-
-    await SecureStore.setItemAsync(
-      "idToken",
-      JSON.stringify(token.AuthenticationResult.IdToken)
-    );
-
-    if(user.isDriver === true){
       navigation.navigate("Home");
     }
     else{
-      //Tell the user they have to be a driver to use this app
-      //Create a driver account to continue
+      navigation.navigate("RegisterDriver");
     }
   };
 

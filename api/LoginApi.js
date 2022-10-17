@@ -1,8 +1,8 @@
-import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
+import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
 import { useState } from "react";
 import { cognitoPool } from "./CognitoPool";
 
-const useLoginAPI = (username, password) => {
+const useLoginApi = (username, password) => {
   const [token, setToken] = useState("");
 
   const loginUser = async () => {
@@ -20,22 +20,22 @@ const useLoginAPI = (username, password) => {
       });
 
       user.authenticateUser(authDetails, {
-        onSuccess: async res => {
+        onSuccess: async (res) => {
           setToken(res);
           console.log("Set the token");
         },
 
-        onFailure: err => {
+        onFailure: (err) => {
           console.log(err);
           switch (err.name) {
-            case 'UserNotConfirmedException':
+            case "UserNotConfirmedException":
               return Alert.alert(General.Error, Auth.UserNotConfirmed);
-            case 'NotAuthorizedException':
+            case "NotAuthorizedException":
               return Alert.alert(General.Error, Auth.IncorrectCredentials);
             default:
               return Alert.alert(General.Error, General.SomethingWentWrong);
           }
-        }
+        },
       });
 
       function pause() {
@@ -52,11 +52,11 @@ const useLoginAPI = (username, password) => {
 
       return { authToken, email };
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return;
     }
   };
   return { loginUser };
 };
 
-export { useLoginAPI };
+export { useLoginApi };

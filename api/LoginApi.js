@@ -1,43 +1,58 @@
-import { COGNITO_ENDPOINT, COGNITO_CLIENTID } from "@env";
-import ky from "ky";
-import jwtDecode from "jwt-decode";
+import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
+import { useState } from "react";
+import { cognitoPool } from "./CognitoPool";
 
-const api = ky.create({
-  prefixUrl: COGNITO_ENDPOINT,
-});
-
-/*
- * We are doing it this way because we to conform it to a hook
- * matt follows this because he dk what to do albeit a bit lost
- * */
 const useLoginAPI = (username, password) => {
-  const loginUser = async () => {
-    let token = null;
-    let error = false;
-    try {
-      const res = await api.post("", {
-        json: {
-          AuthParameters: {
-            USERNAME: username,
-            PASSWORD: password,
-          },
-          AuthFlow: "USER_PASSWORD_AUTH",
-          ClientId: COGNITO_CLIENTID,
-        },
-        headers: {
-          "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
-          "Content-Type": "application/x-amz-json-1.1",
-        },
-      });
-      token = await res.json();
-      //TODO: data validation and error handling
-      //this is dumb
-      let authToken = token.AuthenticationResult.IdToken;
-      let decodeToken = jwtDecode(authToken);
-      let email = decodeToken.email;
+  const [token, setToken] = useState("");
 
-      return { token, email };
+  const loginUser = async () => {
+    let error = false;
+    console.log("Attempting to login in with " + username + password);
+    try {
+      const user = new CognitoUser({
+        Username: username,
+        Pool: cognitoPool,
+      });
+
+      const authDetails = new AuthenticationDetails({
+        Username: username,
+        Password: password,
+      });
+
+      user.authenticateUser(authDetails, {
+        onSuccess: async res => {
+          setToken(res);
+          console.log("Set the token");
+        },
+
+        onFailure: err => {
+          console.log(err);
+          switch (err.name) {
+            case 'UserNotConfirmedException':
+              return Alert.alert(General.Error, Auth.UserNotConfirmed);
+            case 'NotAuthorizedException':
+              return Alert.alert(General.Error, Auth.IncorrectCredentials);
+            default:
+              return Alert.alert(General.Error, General.SomethingWentWrong);
+          }
+        }
+      });
+
+      function pause() {
+        return new Promise((res) => {
+          setTimeout(() => {
+            res();
+          }, 1000);
+        });
+      }
+      await pause();
+      console.log("Result: " + token);
+      let authToken = token.idToken.jwtToken;
+      let email = token.idToken.payload.email;
+
+      return { authToken, email };
     } catch (error) {
+      console.log(error)
       return;
     }
   };

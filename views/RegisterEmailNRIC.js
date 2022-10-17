@@ -10,28 +10,34 @@ import {
   Text,
   Input,
 } from "native-base";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
-import { Alert } from "react-native";
 import { useRegisterUserAPI } from "../api/RegisterUserAPI";
+import { useLoginAPI } from "../api/LoginApi";
+import { useUserAPI } from "../api/UsersAPI";
+import * as SecureStore from "expo-secure-store";
 import TopBar from "../components/TopBar";
 import dayjs from "dayjs";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const RegisterEmailNRIC = ({ navigation, route }) => {
-  const { state } = useContext(GlobalContext);
+  const { state, dispatch } = useContext(GlobalContext);
+  
   if (!state.flags.registerName) return null;
 
+  const username = route.params.username;
+  const password = route.params.password;
   const [name, setName] = useState("");
   const [nric, setNRIC] = useState("");
-  const [email, setEmail] = useState("");
+  const [emailValue, setEmailValue] = useState("");
   const [dob, setDob] = useState(new Date());
   const [userCreationDTO, setUserCreationDTO] = useState("");
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const { createUser } = useRegisterUserAPI(userCreationDTO);
+
+  const { loginUser } = useLoginAPI(username, password);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -46,33 +52,62 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
   };
 
   const registerUser = async function () {
-    const usernameValue = route.params.username;
-    const passwordValue = route.params.password;
     const phoneNumValue = route.params.phoneNum;
-    console.log(usernameValue)
-    console.log(passwordValue)
-    console.log(phoneNumValue)
-    console.log(nric)
-    console.log(name)
-    console.log(email)
-    console.log(dob)
 
     let userCreationDTO = {
-      "password": passwordValue,
-      "username": usernameValue,
+      "password": password,
+      "username": username,
       "userDTO": {
         "nric": nric,
         "name": name,
-        "address": "place_id:ChIJ483Qk9YX2jERA0VOQV7d1tY",
-        "dob": "2000-10-09T00:46:18.784Z",
+        "dob": dob,
         "mobile": phoneNumValue,
-        "email": email,
+        "email": emailValue,
         "isDriver": true
       }
     };
     setUserCreationDTO(userCreationDTO);
+    await createUser(userCreationDTO)
 
-    return await createUser(userCreationDTO)
+    let authNRes = await loginUser();
+    let token = authNRes.authToken;
+    let email = authNRes.email;
+    const { getUser } = useUserAPI(token, email);
+    let user = await getUser();
+    console.log("Found user "+user)
+    if (!user) {
+      return;
+    }
+    console.log("Got user " + JSON.stringify(user));
+
+    dispatch({ type: "SET_USER", payload: user });
+    dispatch({
+      type: "MODIFY_STAGE",
+      payload: {
+        ...state.stage,
+        locationSearch: {
+          text: `Where to, ${user.name}?`,
+        },
+      },
+    });
+    dispatch({
+      type: "SET_TOKEN",
+      payload: token,
+    });
+
+    await SecureStore.setItemAsync(
+      "idToken",
+      JSON.stringify(token)
+    );
+
+    await SecureStore.setItemAsync(
+      "uuid",
+      JSON.stringify(user.id)
+    );
+    console.log("LEAVING");
+    navigation.navigate("RegisterDriver", {
+      userData: user,
+    });
   };
 
   return (
@@ -114,9 +149,9 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
               Enter your email address
             </FormControl.Label>
             <Input
-              value={email}
+              value={emailValue}
               placeholder={"Email@mail.com"}
-              onChangeText={(text) => setEmail(text)}
+              onChangeText={(text) => setEmailValue(text)}
               variant="underlined"
               size="lg"
             />
@@ -145,7 +180,7 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
               style={{ marginTop: 30 }}
               variant="outline"
             >
-              Next
+              Register
             </Button>
           </Center>
         </Stack>

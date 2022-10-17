@@ -1,8 +1,7 @@
 import { BACKEND_API_ENDPOINT } from "@env";
 import ky from "ky";
-import jwtDecode from "jwt-decode";
 
-const useUserAPI = (token, email) => {
+const useUserApi = (token) => {
   const api = ky.create({
     prefixUrl: BACKEND_API_ENDPOINT,
     headers: {
@@ -10,7 +9,7 @@ const useUserAPI = (token, email) => {
     },
   });
 
-  const getUser = async () => {
+  const getUser = async (email) => {
     let data = null;
     try {
       const res = await api.get(`users/byEmail/${email}`);
@@ -23,7 +22,20 @@ const useUserAPI = (token, email) => {
     }
   };
 
-  return { getUser };
+  const createUser = async (user) => {
+    let data = null;
+    try {
+      const res = await api.post("users/wCognito/create", {
+        json: user,
+      });
+      data = await res.json();
+      return data;
+    } catch (error) {
+      return;
+    }
+  };
+
+  return { getUser, createUser };
 };
 
-export { useUserAPI };
+export { useUserApi };

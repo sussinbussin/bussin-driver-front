@@ -12,8 +12,8 @@ import {
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
 import TopBar from "../components/TopBar";
-import { useLoginAPI } from "../api/LoginApi";
-import { useUserAPI } from "../api/UsersAPI";
+import { useLoginApi } from "../api/LoginApi";
+import { useUserApi } from "../api/UsersApi";
 import * as SecureStore from "expo-secure-store";
 
 const Login = ({ navigation }) => {
@@ -24,7 +24,7 @@ const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { loginUser } = useLoginAPI(username, password);
+  const { loginUser } = useLoginApi(username, password);
 
   const handlePassword = (value) => setPassword(value);
   const handleUsername = (value) => setUsername(value);
@@ -56,28 +56,26 @@ const Login = ({ navigation }) => {
 
     await SecureStore.setItemAsync(
       "idToken",
-      JSON.stringify(token).replace(/['"]+/g, '')
+      JSON.stringify(token).replace(/['"]+/g, "")
     );
 
-    if(user.isDriver === true){
-      
-    dispatch({ type: "SET_USER", payload: user });
-    dispatch({
-      type: "MODIFY_STAGE",
-      payload: {
-        ...state.stage,
-        locationSearch: {
-          text: `Where to, ${user.name}?`,
+    if (user.isDriver === true) {
+      dispatch({ type: "SET_USER", payload: user });
+      dispatch({
+        type: "MODIFY_STAGE",
+        payload: {
+          ...state.stage,
+          locationSearch: {
+            text: `Where to, ${user.name}?`,
+          },
         },
-      },
-    });
-    dispatch({
-      type: "SET_TOKEN",
-      payload: token,
-    });
+      });
+      dispatch({
+        type: "SET_TOKEN",
+        payload: token,
+      });
       navigation.navigate("Home");
-    }
-    else{
+    } else {
       navigation.navigate("RegisterDriver");
     }
   };

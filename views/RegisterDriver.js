@@ -24,8 +24,8 @@ const RegisterDriver = ({ navigation, route }) => {
 
     const [driverDTO, setDriverDTO] = useState("")
 
-    let token = SecureStore.getItemAsync("idToken");
-    let uuid = SecureStore.getItemAsync("uuid");
+    const [token, setToken] = useState("");
+    const [uuid, setUuid] = useState("");
     const {createDriver} = useCreateDriverAPI(token, uuid, driverDTO);
 
     const [carPlate, setCarPlate] = useState("");
@@ -64,7 +64,9 @@ const RegisterDriver = ({ navigation, route }) => {
             "capacity": capacity,
             "fuelType": fuelType
         }
-        setDriverDTO(driverDTO)
+        setToken(await SecureStore.getItemAsync("idToken"));
+        setUuid(await SecureStore.getItemAsync("uuid"));
+        setDriverDTO(driverDTO);
 
         await createDriver(driverDTO);
 

@@ -12,7 +12,10 @@ const useCreateDriverAPI = (token, uuid, driverDTO) => {
     const createDriver = async () => {
         let data = null;
         try {
-            console.log("Creating driver with " + uuid + JSON.stringify(driverDTO))
+            console.log("Creating driver with ")
+            console.log(token)
+            console.log(uuid)
+            console.log(driverDTO)
             const res = await api.post(`driver/${uuid}`, {json: driverDTO});
             data = await res.json();
             console.log(data);

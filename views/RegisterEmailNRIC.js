@@ -97,14 +97,14 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
 
     await SecureStore.setItemAsync(
       "idToken",
-      JSON.stringify(token)
+      JSON.stringify(token).replace(/['"]+/g, '')
     );
 
     await SecureStore.setItemAsync(
       "uuid",
-      JSON.stringify(user.id)
+      JSON.stringify(user.id).replace(/['"]+/g, '')
     );
-    console.log("LEAVING");
+
     navigation.navigate("RegisterDriver", {
       userData: user,
     });

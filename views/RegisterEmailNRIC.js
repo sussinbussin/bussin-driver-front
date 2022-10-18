@@ -12,7 +12,7 @@ import {
 } from "native-base";
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
-import { useLoginAPI } from "../api/LoginApi";
+import { useLoginApi } from "../api/LoginApi";
 import { useUserApi } from "../api/UsersApi";
 import * as SecureStore from "expo-secure-store";
 import TopBar from "../components/TopBar";
@@ -26,53 +26,9 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
 
   const username = route.params.username;
   const password = route.params.password;
-  const [name, setName] = useState("");
-  const [nric, setNRIC] = useState("");
-  const [emailValue, setEmailValue] = useState("");
-  const [dob, setDob] = useState(new Date());
-  const [userCreationDTO, setUserCreationDTO] = useState("");
 
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
-  const { createUser } = useUserApi(userCreationDTO);
-
-  const { loginUser } = useLoginAPI(username, password);
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-  const handleDateSelect = (date) => {
-    setDob(date);
-    hideDatePicker();
-  };
-
-  const registerUser = async function () {
-    const phoneNumValue = route.params.phoneNum;
-
-    let userCreationDTO = {
-      password: password,
-      username: username,
-      userDTO: {
-        nric: nric,
-        name: name,
-        dob: dob,
-        mobile: phoneNumValue,
-        email: emailValue,
-        isDriver: false,
-      },
-    };
-    setUserCreationDTO(userCreationDTO);
-    await createUser(userCreationDTO);
-
-    let authNRes = await loginUser();
-    let token = authNRes.authToken;
-    let email = authNRes.email;
-    const { getUser } = useUserAPI(token, email);
-    let user = await getUser();
+  const { loginUser } = useLoginApi(username, password, async (token, email) => {
+    let user = await useUserApi(token).getUser(email);
     console.log("Found user " + user);
     if (!user) {
       return;
@@ -107,6 +63,49 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
     navigation.navigate("RegisterDriver", {
       userData: user,
     });
+  });
+
+  const [name, setName] = useState("");
+  const [nric, setNRIC] = useState("");
+  const [emailValue, setEmailValue] = useState("");
+  const [dob, setDob] = useState(new Date());
+  const [userCreationDTO, setUserCreationDTO] = useState("");
+
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const { createUser } = useUserApi(userCreationDTO);
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+  const handleDateSelect = (date) => {
+    setDob(date);
+    hideDatePicker();
+  };
+
+  const registerUser = async function () {
+    const phoneNumValue = route.params.phoneNum;
+
+    let userCreationDTO = {
+      password: password,
+      username: username,
+      userDTO: {
+        nric: nric,
+        name: name,
+        dob: dob,
+        mobile: phoneNumValue,
+        email: emailValue,
+        isDriver: false,
+      },
+    };
+    setUserCreationDTO(userCreationDTO);
+    await createUser(userCreationDTO);
+
+    await loginUser();
   };
 
   return (

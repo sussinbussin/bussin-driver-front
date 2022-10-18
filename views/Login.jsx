@@ -25,8 +25,6 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const { loginUser } = useLoginApi(username, password, async (token, email) => {
-    console.log(token)
-    console.log(email)
     if (!token) {
       //handle invalid user
       console.log("Invalid user");

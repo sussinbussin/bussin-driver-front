@@ -16,6 +16,7 @@ import * as SecureStore from "expo-secure-store";
 import TopBar from "../components/TopBar";
 import DropdownPicker from "react-native-dropdown-picker";
 import { useUserApi } from "../api/UsersApi";
+import { useCreateDriverAPI } from "../api/DriverCreateAPI";
 
 const RegisterDriver = ({ navigation, route }) => {
   const { state } = useContext(GlobalContext);
@@ -26,7 +27,7 @@ const RegisterDriver = ({ navigation, route }) => {
 
   const [token, setToken] = useState("");
   const [uuid, setUuid] = useState("");
-  const { createDriver } = useUserApi(token, uuid, driverDTO);
+  const { createDriver } = useCreateDriverAPI(token, uuid, driverDTO);
 
   const [carPlate, setCarPlate] = useState("");
   const [modelAndColour, setModelAndColour] = useState("");
@@ -64,12 +65,8 @@ const RegisterDriver = ({ navigation, route }) => {
       capacity: capacity,
       fuelType: fuelType,
     };
-    setToken(await SecureStore.getItemAsync("idToken"));
-    setUuid(await SecureStore.getItemAsync("uuid"));
-    setDriverDTO(driverDTO);
 
-    let driver = await createDriver(driverDTO);
-    console.log(driver);
+    let driver = await useCreateDriverAPI(await SecureStore.getItemAsync("idToken"), await SecureStore.getItemAsync("uuid"), driverDTO).createDriver();
     if (driver) {
       navigation.navigate("Home");
     }

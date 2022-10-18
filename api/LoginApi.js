@@ -1,35 +1,42 @@
-import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
-import { cognitoPool } from "./CognitoPool";
+import { COGNITO_ENDPOINT, COGNITO_CLIENTID } from "@env";
+import ky from "ky";
+import jwtDecode from "jwt-decode";
 
-const useLoginApi = (username, password, callBack) => {
+const api = ky.create({
+  prefixUrl: COGNITO_ENDPOINT,
+});
+
+const useLoginApi = (username, password) => {
   const loginUser = async () => {
+    let token = null;
     let error = false;
-    console.log("Attempting to login in with " + username + password);
     try {
-      const user = new CognitoUser({
-        Username: username,
-        Pool: cognitoPool,
-      });
-
-      const authDetails = new AuthenticationDetails({
-        Username: username,
-        Password: password,
-      });
-
-      user.authenticateUser(authDetails, {
-        onSuccess: async (res) => {
-          let authToken = res.idToken.jwtToken;
-          let email = res.idToken.payload.email;
-          callBack(authToken, email);
+      console.log(username + password);
+      const res = await api.post("", {
+        json: {
+          AuthParameters: {
+            USERNAME: username,
+            PASSWORD: password,
+          },
+          AuthFlow: "USER_PASSWORD_AUTH",
+          ClientId: COGNITO_CLIENTID,
         },
-
-        onFailure: (err) => {
-          return err;
+        headers: {
+          "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
+          "Content-Type": "application/x-amz-json-1.1",
         },
       });
+      token = await res.json();
+
+      let authToken = token.AuthenticationResult.IdToken;
+      let decodeToken = jwtDecode(authToken);
+      let email = decodeToken.email;
+
+      console.log(email)
+      return { authToken, email };
     } catch (error) {
       console.log(error);
-      return error;
+      return;
     }
   };
   return { loginUser };

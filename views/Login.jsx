@@ -24,7 +24,23 @@ const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { loginUser } = useLoginApi(username, password, async (token, email) => {
+  const { loginUser } = useLoginApi(username, password);
+
+  const handlePassword = (value) => setPassword(value);
+  const handleUsername = (value) => setUsername(value);
+
+  const submit = async () => {
+    //for development
+    if (username == "" || password == "") {
+      if (!state.flags.requireLogin) {
+        navigation.navigate("Home");
+      }
+      return;
+    }
+    let authNRes = await loginUser();
+    let token = authNRes.authToken;
+    let email = authNRes.email;
+
     if (!token) {
       //handle invalid user
       console.log("Invalid user");
@@ -71,20 +87,6 @@ const Login = ({ navigation }) => {
     } else {
       navigation.navigate("RegisterDriver");
     }
-  })
-
-  const handlePassword = (value) => setPassword(value);
-  const handleUsername = (value) => setUsername(value);
-
-  const submit = async () => {
-    //for development
-    if (username == "" || password == "") {
-      if (!state.flags.requireLogin) {
-        navigation.navigate("Home");
-      }
-      return;
-    }
-    await loginUser();
   };
 
   return (

@@ -27,47 +27,9 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
   const username = route.params.username;
   const password = route.params.password;
 
-  const { loginUser } = useLoginApi(username, password, async (token, email) => {
-    let user = await useUserApi(token).getUser(email);
-    console.log("Found user " + user);
-    if (!user) {
-      return;
-    }
-    console.log("Got user " + JSON.stringify(user));
-
-    dispatch({ type: "SET_USER", payload: user });
-    dispatch({
-      type: "MODIFY_STAGE",
-      payload: {
-        ...state.stage,
-        locationSearch: {
-          text: `Where to, ${user.name}?`,
-        },
-      },
-    });
-    dispatch({
-      type: "SET_TOKEN",
-      payload: token,
-    });
-
-    await SecureStore.setItemAsync(
-      "idToken",
-      JSON.stringify(token).replace(/['"]+/g, "")
-    );
-
-    await SecureStore.setItemAsync(
-      "uuid",
-      JSON.stringify(user.id).replace(/['"]+/g, "")
-    );
-
-    navigation.navigate("RegisterDriver", {
-      userData: user,
-    });
-  });
-
   const [name, setName] = useState("");
   const [nric, setNRIC] = useState("");
-  const [email, setEmail] = useState("");
+  const [emailValue, setEmail] = useState("");
   const [dob, setDob] = useState(new Date());
   const [userCreationDTO, setUserCreationDTO] = useState("");
 
@@ -96,7 +58,7 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
     setNRIC(nric.toUpperCase());
     const nricIsValid = (nric.charAt(0)==='S' || nric.charAt(0)==='T') && nric.length===9;
     const nameIsValid = name.length >= 4;
-    const emailIsValid = email.toLowerCase()
+    const emailIsValid = emailValue.toLowerCase()
     .match(
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
@@ -129,6 +91,7 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
     }
     if(nricIsValid && nameIsValid && emailIsValid && dobIsValid){
       const phoneNumValue = route.params.phoneNum;
+      const { loginUser } = useLoginApi(username, password);
 
       let userCreationDTO = {
         password: password,
@@ -138,14 +101,52 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
           name: name,
           dob: dob,
           mobile: phoneNumValue,
-          email: email,
+          email: emailValue,
           isDriver: false,
         },
       };
       setUserCreationDTO(userCreationDTO);
       await createUser(userCreationDTO);
   
-      await loginUser();
+      let authNRes = await loginUser();
+      let token = authNRes.authToken;
+      let email = authNRes.email;
+
+      let user = await useUserApi(token).getUser(email);
+      console.log("Found user " + user);
+      if (!user) {
+        return;
+      }
+      console.log("Got user " + JSON.stringify(user));
+  
+      dispatch({ type: "SET_USER", payload: user });
+      dispatch({
+        type: "MODIFY_STAGE",
+        payload: {
+          ...state.stage,
+          locationSearch: {
+            text: `Where to, ${user.name}?`,
+          },
+        },
+      });
+      dispatch({
+        type: "SET_TOKEN",
+        payload: token,
+      });
+  
+      await SecureStore.setItemAsync(
+        "idToken",
+        JSON.stringify(token).replace(/['"]+/g, "")
+      );
+  
+      await SecureStore.setItemAsync(
+        "uuid",
+        JSON.stringify(user.id).replace(/['"]+/g, "")
+      );
+  
+      navigation.navigate("RegisterDriver", {
+        userData: user,
+      });
     }
   };
 
@@ -190,7 +191,7 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
               Enter your email address
             </FormControl.Label>
             <Input
-              value={email}
+              value={emailValue}
               placeholder={"Email@mail.com"}
               onChangeText={(text) => setEmail(text)}
               variant="underlined"

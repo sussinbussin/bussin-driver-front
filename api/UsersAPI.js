@@ -38,9 +38,7 @@ const useUserApi = (token) => {
   const createUser = async (user) => {
     let data = null;
     try {
-      const res = await api.post("users/wCognito/create", {
-        json: user,
-      });
+      const res = await api.post("users/wCognito/create", {json: user});
       data = await res.json();
       return data;
     } catch (error) {

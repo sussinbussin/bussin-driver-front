@@ -1,27 +1,25 @@
 import {
-  Heading,
-  View,
-  Box,
-  HStack,
-  Center,
-  Stack,
-  FormControl,
-  Button,
+  Alert,
   Text,
+  Box,
+  Button,
+  Heading,
+  FormControl,
   Input,
+  Stack,
+  Center,
+  View,
 } from "native-base";
+import TopBarBack from "../components/TopBarBack";
 import { useContext, useState } from "react";
+import { useDriverApi } from "../api/DriverApi";
 import { GlobalContext } from "../contexts/global";
-import * as SecureStore from "expo-secure-store";
-import TopBar from "../components/TopBar";
 import DropdownPicker from "react-native-dropdown-picker";
-import { useUserApi } from "../api/UsersApi";
-import { useCreateDriverAPI } from "../api/DriverCreateAPI";
+import * as SecureStore from "expo-secure-store";
 
-const RegisterDriver = ({ navigation, route }) => {
+const VehicleSettings = () => {
   const { state } = useContext(GlobalContext);
-
-  if (!state.flags.registerName) return null;
+  if (!state.flags.register) return null;
 
   const [carPlate, setCarPlate] = useState("");
   const [modelAndColour, setModelAndColour] = useState("");
@@ -52,24 +50,27 @@ const RegisterDriver = ({ navigation, route }) => {
     { label: "Diesel", value: "TypeDiesel" },
   ]);
 
-  const makeDriver = async function () {
-    let driverDTO = {
-      carPlate: carPlate,
-      modelAndColour: modelAndColour,
-      capacity: capacity,
-      fuelType: fuelType,
-    };
+  const renderDefaults = async () => {
+    let token = await SecureStore.getItemAsync("idToken");
+    let cp = await SecureStore.getItemAsync("carPlate");
+  
+    let driver = await useDriverApi(token).getDriverByCarPlate(cp);
 
-    let driver = await useCreateDriverAPI(await SecureStore.getItemAsync("idToken"), await SecureStore.getItemAsync("uuid"), driverDTO).createDriver();
-    if (driver) {
-      navigation.navigate("Home");
-    }
+    setCarPlate(driver.carPlate);
+    setModelAndColour(driver.modelAndColour);
+    setCapacity(driver.capacity);
+    setFuelType(driver.fuelType);
+  }
+  renderDefaults();
+
+  const submit = () => {
+
   };
 
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
-      <TopBar></TopBar>
-
+      <TopBarBack></TopBarBack>
+      <Text style={{ paddingTop: 30, fontSize: 20, fontWeight: "bold" }}>Edit Vehicle Information</Text>
       <Box
         w="100%"
         maxWidth="500px"
@@ -80,24 +81,24 @@ const RegisterDriver = ({ navigation, route }) => {
         variant="light"
       >
         <Stack mx="10">
-          <Center style={{ paddingTop: 30 }}>
+          <Center>
             <FormControl.Label style={{ alignItems: "center" }}>
-              Car plate number
+              Car Plate Number
             </FormControl.Label>
             <Input
-              value={carPlate}
-              placeholder={"Car Plate"}
-              onChangeText={(text) => setCarPlate(text)}
+              type="Text"
+              defaultValue={carPlate}
+              onChangeText={setCarPlate}
               variant="underlined"
               size="lg"
             />
-            <FormControl.Label style={{ marginTop: 15 }}>
-              Car model and colour
+            <FormControl.Label style={{ alignItems: "center" }}>
+              Model and Colour
             </FormControl.Label>
             <Input
-              value={modelAndColour}
-              placeholder={"Model and colour"}
-              onChangeText={(text) => setModelAndColour(text)}
+              type="Text"
+              defaultValue={modelAndColour}
+              onChangeText={setModelAndColour}
               variant="underlined"
               size="lg"
             />
@@ -105,13 +106,13 @@ const RegisterDriver = ({ navigation, route }) => {
               Capacity
             </FormControl.Label>
             <DropdownPicker
+              defaultValue={capacity}
               open={capacityOpen}
               value={capacity}
               items={capacityItems}
               setOpen={setCapacityOpen}
               setValue={setCapacity}
               setItems={setCapacityItems}
-              placeholder={4}
               style={{
                 backgroundColor: "black",
                 borderColor: "white",
@@ -134,13 +135,13 @@ const RegisterDriver = ({ navigation, route }) => {
               Fuel Type
             </FormControl.Label>
             <DropdownPicker
+              defaultValue={fuelType}
               open={fuelTypeOpen}
               value={fuelType}
               items={fuelTypeItems}
               setOpen={setFuelTypeOpen}
               setValue={setFuelType}
               setItems={setFuelTypeItems}
-              placeholder={"92"}
               style={{
                 backgroundColor: "black",
                 borderColor: "white",
@@ -160,12 +161,14 @@ const RegisterDriver = ({ navigation, route }) => {
               zIndex={500}
             />
             <Button
-              onPress={makeDriver}
+              onPress={() => {
+                submit();
+              }}
               w="100%"
-              style={{ marginTop: 30 }}
+              style={{ marginTop: 25 }}
               variant="outline"
             >
-              Register
+              Save Changes
             </Button>
           </Center>
         </Stack>
@@ -174,4 +177,4 @@ const RegisterDriver = ({ navigation, route }) => {
   );
 };
 
-export default RegisterDriver;
+export default VehicleSettings;

@@ -230,6 +230,32 @@ const Profile = () => {
           </View>
         </View>
 
+        <View>
+          <Text style={{ fontSize: 18, fontWeight: "bold", paddingBottom: 10 }}>
+              My Vehicle
+            </Text>
+            <View style={{ width: "100%" }}>
+              <Pressable
+                onPress={() => {
+                  navigation.navigate("VehicleSettings");
+                }}
+                flexDirection="row"
+              >
+                <Text style={{ fontSize: 15, flex: 7 }}>Vehicle Information</Text>
+
+                <AntDesign
+                  name="right"
+                  size={15}
+                  color="white"
+                  style={{
+                    marginTop: 3,
+                    marginLeft: 10,
+                    flex: 1,
+                  }}
+                />
+              </Pressable>
+            </View>
+          </View>
         <View style={{ marginTop: 15 }}>
           <Text style={{ fontSize: 18, fontWeight: "bold", paddingBottom: 10 }}>
             General

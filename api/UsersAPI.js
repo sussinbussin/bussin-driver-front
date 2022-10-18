@@ -22,6 +22,19 @@ const useUserApi = (token) => {
     }
   };
 
+  const getFullUserByUuid = async (uuid) => {
+    let data = null;
+    try{
+      const res = await api.get(`users/full/${uuid}`);
+      data = await res.json();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+  }
+
   const createUser = async (user) => {
     let data = null;
     try {
@@ -35,7 +48,7 @@ const useUserApi = (token) => {
     }
   };
 
-  return { getUser, createUser };
+  return { getUser, createUser, getFullUserByUuid};
 };
 
 export { useUserApi };

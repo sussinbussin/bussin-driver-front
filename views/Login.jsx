@@ -41,8 +41,18 @@ const Login = ({ navigation }) => {
       "idToken",
       JSON.stringify(token).replace(/['"]+/g, "")
     );
+    await SecureStore.setItemAsync(
+      "uuid",
+      JSON.stringify(user.id).replace(/['"]+/g, '')
+    );
 
     if (user.isDriver === true) {
+      let fullUser = await useUserApi(token).getFullUserByUuid(JSON.stringify(user.id).replace(/['"]+/g, ''));
+      await SecureStore.setItemAsync(
+        "carPlate",
+        JSON.stringify(fullUser.driver.carPlate).replace(/['"]+/g, '')
+      );
+      
       dispatch({ type: "SET_USER", payload: user });
       dispatch({
         type: "MODIFY_STAGE",

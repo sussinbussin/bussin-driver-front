@@ -21,7 +21,21 @@ const useDriverApi = (token) => {
         }
     }
 
-    return { getDriverByCarPlate };
+    const updateDriver = async (carPlate, driverDTO) => {
+        let data = null;
+        try {
+            const res = await api.put(`driver/${carPlate}`, {
+              json: driverDTO,
+            });
+            data = await res.json();
+            console.log(data);
+            return data;
+          } catch (error) {
+            return;
+          }
+    }
+
+    return { getDriverByCarPlate, updateDriver };
 }
 
 export { useDriverApi };

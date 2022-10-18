@@ -26,6 +26,8 @@ const VehicleSettings = () => {
   const [capacity, setCapacity] = useState("");
   const [fuelType, setFuelType] = useState("");
 
+  const [buttonMessage, setButtonMessage] = useState("Save changes");
+
   const [capacityOpen, setCapacityOpen] = useState(false);
   const [capacityItems, setCapacityItems] = useState([
     { label: "2", value: 2 },
@@ -53,7 +55,7 @@ const VehicleSettings = () => {
   const renderDefaults = async () => {
     let token = await SecureStore.getItemAsync("idToken");
     let cp = await SecureStore.getItemAsync("carPlate");
-  
+
     let driver = await useDriverApi(token).getDriverByCarPlate(cp);
 
     setCarPlate(driver.carPlate);
@@ -63,8 +65,17 @@ const VehicleSettings = () => {
   }
   renderDefaults();
 
-  const submit = () => {
-
+  const submit = async function () {
+    let driverDTO = {
+      carPlate: carPlate,
+      modelAndColour: modelAndColour,
+      capacity: capacity,
+      fuelType: fuelType,
+    };
+    let driver = await useDriverApi(await SecureStore.getItemAsync("idToken")).updateDriver(carPlate, driverDTO);
+    if (driver) {
+      setButtonMessage("Success!");
+    }
   };
 
   return (
@@ -85,13 +96,7 @@ const VehicleSettings = () => {
             <FormControl.Label style={{ alignItems: "center" }}>
               Car Plate Number
             </FormControl.Label>
-            <Input
-              type="Text"
-              defaultValue={carPlate}
-              onChangeText={setCarPlate}
-              variant="underlined"
-              size="lg"
-            />
+            <Text style={{ fontSize: 16 }}>{carPlate}</Text>
             <FormControl.Label style={{ alignItems: "center" }}>
               Model and Colour
             </FormControl.Label>
@@ -168,7 +173,7 @@ const VehicleSettings = () => {
               style={{ marginTop: 25 }}
               variant="outline"
             >
-              Save Changes
+              {buttonMessage}
             </Button>
           </Center>
         </Stack>

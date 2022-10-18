@@ -1,5 +1,4 @@
 import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
-import { useState } from "react";
 import { cognitoPool } from "./CognitoPool";
 
 const useLoginApi = (username, password, callBack) => {
@@ -25,20 +24,12 @@ const useLoginApi = (username, password, callBack) => {
         },
 
         onFailure: (err) => {
-          console.log(err);
-          switch (err.name) {
-            case "UserNotConfirmedException":
-              return Alert.alert(General.Error, Auth.UserNotConfirmed);
-            case "NotAuthorizedException":
-              return Alert.alert(General.Error, Auth.IncorrectCredentials);
-            default:
-              return Alert.alert(General.Error, General.SomethingWentWrong);
-          }
+          return err;
         },
       });
     } catch (error) {
       console.log(error);
-      return;
+      return error;
     }
   };
   return { loginUser };

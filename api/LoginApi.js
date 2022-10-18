@@ -2,9 +2,7 @@ import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
 import { useState } from "react";
 import { cognitoPool } from "./CognitoPool";
 
-const useLoginApi = (username, password) => {
-  const [token, setToken] = useState("");
-
+const useLoginApi = (username, password, callBack) => {
   const loginUser = async () => {
     let error = false;
     console.log("Attempting to login in with " + username + password);
@@ -21,8 +19,9 @@ const useLoginApi = (username, password) => {
 
       user.authenticateUser(authDetails, {
         onSuccess: async (res) => {
-          setToken(res);
-          console.log("Set the token");
+          let authToken = res.idToken.jwtToken;
+          let email = res.idToken.payload.email;
+          callBack(authToken, email);
         },
 
         onFailure: (err) => {
@@ -37,20 +36,6 @@ const useLoginApi = (username, password) => {
           }
         },
       });
-
-      function pause() {
-        return new Promise((res) => {
-          setTimeout(() => {
-            res();
-          }, 1000);
-        });
-      }
-      await pause();
-      console.log("Result: " + token);
-      let authToken = token.idToken.jwtToken;
-      let email = token.idToken.payload.email;
-
-      return { authToken, email };
     } catch (error) {
       console.log(error);
       return;

@@ -15,8 +15,8 @@ import { GlobalContext } from "../contexts/global";
 import * as SecureStore from "expo-secure-store";
 import TopBar from "../components/TopBar";
 import DropdownPicker from "react-native-dropdown-picker";
-import { useUserApi } from "../api/UsersApi";
 import { useCreateDriverAPI } from "../api/DriverCreateAPI";
+import TopBarBack from "../components/TopBarBack";
 
 const RegisterDriver = ({ navigation, route }) => {
   const { state } = useContext(GlobalContext);
@@ -27,6 +27,11 @@ const RegisterDriver = ({ navigation, route }) => {
   const [modelAndColour, setModelAndColour] = useState("");
   const [capacity, setCapacity] = useState("");
   const [fuelType, setFuelType] = useState("");
+
+  const [fieldCarPlateColor, setFieldCarPlateColor] = useState("white");
+  const [fieldModelAndColourColor, setFieldModelAndColourColor] = useState("white");
+  const [fieldCapacityColor, setFieldCapacityColor] = useState("white");
+  const [fieldFuelTypeColor, setFieldFuelTypeColor] = useState("white");
 
   const [capacityOpen, setCapacityOpen] = useState(false);
   const [capacityItems, setCapacityItems] = useState([
@@ -53,22 +58,59 @@ const RegisterDriver = ({ navigation, route }) => {
   ]);
 
   const makeDriver = async function () {
-    let driverDTO = {
-      carPlate: carPlate,
-      modelAndColour: modelAndColour,
-      capacity: capacity,
-      fuelType: fuelType,
-    };
+    setCarPlate(carPlate.toUpperCase());
+    const carPlateIsValid = carPlate.length >= 4 && carPlate.length <= 8;
+    const modelAndColourIsvalid = modelAndColour.length > 4 && modelAndColour.length < 255;
+    const capacityIsValid = capacity >= 2 && capacity <= 12;
+    const fuelTypeIsValid = fuelType === 'Type92' || fuelType === 'Type95' || fuelType === 'Type98' || fuelType === 'TypePremium' || fuelType === 'TypeDiesel';
 
-    let driver = await useCreateDriverAPI(await SecureStore.getItemAsync("idToken"), await SecureStore.getItemAsync("uuid"), driverDTO).createDriver();
-    if (driver) {
-      navigation.navigate("Home");
+    if(!carPlateIsValid){
+      setFieldCarPlateColor("red.500");
+    }
+    else{
+      setFieldCarPlateColor("white");
+    }
+    if(!modelAndColourIsvalid){
+      setFieldModelAndColourColor("red.500");
+    }
+    else{
+      setFieldModelAndColourColor("white");
+    }
+    if(!capacityIsValid){
+      setFieldCapacityColor("red");
+    }
+    else{
+      setFieldCapacityColor("white");
+    }
+    if(!fuelTypeIsValid){
+      setFieldFuelTypeColor("red");
+    }
+    else{
+      setFieldFuelTypeColor("white");
+    }
+
+    if(carPlateIsValid && modelAndColourIsvalid && capacityIsValid && fuelTypeIsValid) {
+      let driverDTO = {
+        carPlate: carPlate,
+        modelAndColour: modelAndColour,
+        capacity: capacity,
+        fuelType: fuelType,
+      };
+  
+      let driver = await useCreateDriverAPI(await SecureStore.getItemAsync("idToken"), await SecureStore.getItemAsync("uuid"), driverDTO).createDriver();
+      if (driver) {
+        await SecureStore.setItemAsync(
+          "carPlate",
+          JSON.stringify(carPlate).replace(/['"]+/g, '')
+        );
+        navigation.navigate("Home");
+      }
     }
   };
 
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
-      <TopBar></TopBar>
+      <TopBarBack/>
 
       <Box
         w="100%"
@@ -90,6 +132,7 @@ const RegisterDriver = ({ navigation, route }) => {
               onChangeText={(text) => setCarPlate(text)}
               variant="underlined"
               size="lg"
+              borderColor={fieldCarPlateColor}
             />
             <FormControl.Label style={{ marginTop: 15 }}>
               Car model and colour
@@ -100,6 +143,7 @@ const RegisterDriver = ({ navigation, route }) => {
               onChangeText={(text) => setModelAndColour(text)}
               variant="underlined"
               size="lg"
+              borderColor={fieldModelAndColourColor}
             />
             <FormControl.Label style={{ marginTop: 15 }}>
               Capacity
@@ -114,7 +158,7 @@ const RegisterDriver = ({ navigation, route }) => {
               placeholder={4}
               style={{
                 backgroundColor: "black",
-                borderColor: "white",
+                borderColor: fieldCapacityColor,
               }}
               placeholderStyle={{
                 color: "grey",
@@ -128,7 +172,7 @@ const RegisterDriver = ({ navigation, route }) => {
               dropDownContainerStyle={{
                 backgroundColor: "#202020",
               }}
-              zIndex={1000}
+              zIndex={2000}
             />
             <FormControl.Label style={{ marginTop: 15 }}>
               Fuel Type
@@ -143,7 +187,7 @@ const RegisterDriver = ({ navigation, route }) => {
               placeholder={"92"}
               style={{
                 backgroundColor: "black",
-                borderColor: "white",
+                borderColor: fieldFuelTypeColor,
               }}
               placeholderStyle={{
                 color: "grey",
@@ -157,7 +201,7 @@ const RegisterDriver = ({ navigation, route }) => {
               dropDownContainerStyle={{
                 backgroundColor: "#202020",
               }}
-              zIndex={500}
+              zIndex={3000}
             />
             <Button
               onPress={makeDriver}

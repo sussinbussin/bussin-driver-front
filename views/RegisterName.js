@@ -13,8 +13,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
-import { Alert, Parse } from "react-native";
-import { useUserApi } from "../api/UsersApi";
 import TopBar from "../components/TopBar";
 
 const RegisterName = ({ navigation, route }) => {

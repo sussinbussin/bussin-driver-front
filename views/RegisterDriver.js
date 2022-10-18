@@ -23,12 +23,6 @@ const RegisterDriver = ({ navigation, route }) => {
 
   if (!state.flags.registerName) return null;
 
-  const [driverDTO, setDriverDTO] = useState("");
-
-  const [token, setToken] = useState("");
-  const [uuid, setUuid] = useState("");
-  const { createDriver } = useCreateDriverAPI(token, uuid, driverDTO);
-
   const [carPlate, setCarPlate] = useState("");
   const [modelAndColour, setModelAndColour] = useState("");
   const [capacity, setCapacity] = useState("");

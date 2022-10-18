@@ -37,6 +37,7 @@ const Login = ({ navigation }) => {
       }
       return;
     }
+    
     let authNRes = await loginUser();
     let token = authNRes.authToken;
     let email = authNRes.email;

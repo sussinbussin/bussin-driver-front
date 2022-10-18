@@ -25,6 +25,12 @@ const VehicleSettings = () => {
   const [modelAndColour, setModelAndColour] = useState("");
   const [capacity, setCapacity] = useState("");
   const [fuelType, setFuelType] = useState("");
+  const [rendered, setRendered] = useState(false);
+
+  const [fieldCarPlateColor, setFieldCarPlateColor] = useState("white");
+  const [fieldModelAndColourColor, setFieldModelAndColourColor] = useState("white");
+  const [fieldCapacityColor, setFieldCapacityColor] = useState("white");
+  const [fieldFuelTypeColor, setFieldFuelTypeColor] = useState("white");
 
   const [buttonMessage, setButtonMessage] = useState("Save changes");
 
@@ -62,19 +68,56 @@ const VehicleSettings = () => {
     setModelAndColour(driver.modelAndColour);
     setCapacity(driver.capacity);
     setFuelType(driver.fuelType);
+
+    setRendered(true);
   }
-  renderDefaults();
+
+  if(!rendered){
+    renderDefaults();
+  }
 
   const submit = async function () {
-    let driverDTO = {
-      carPlate: carPlate,
-      modelAndColour: modelAndColour,
-      capacity: capacity,
-      fuelType: fuelType,
-    };
-    let driver = await useDriverApi(await SecureStore.getItemAsync("idToken")).updateDriver(carPlate, driverDTO);
-    if (driver) {
-      setButtonMessage("Success!");
+    setCarPlate(carPlate.toUpperCase());
+    const carPlateIsValid = carPlate.length >= 4 && carPlate.length <= 8;
+    const modelAndColourIsvalid = modelAndColour.length > 4 && modelAndColour.length < 255;
+    const capacityIsValid = capacity >= 2 && capacity <= 12;
+    const fuelTypeIsValid = fuelType === 'Type92' || fuelType === 'Type95' || fuelType === 'Type98' || fuelType === 'TypePremium' || fuelType === 'TypeDiesel';
+
+    if (!carPlateIsValid) {
+      setFieldCarPlateColor("red.500");
+    }
+    else {
+      setFieldCarPlateColor("white");
+    }
+    if (!modelAndColourIsvalid) {
+      setFieldModelAndColourColor("red.500");
+    }
+    else {
+      setFieldModelAndColourColor("white");
+    }
+    if (!capacityIsValid) {
+      setFieldCapacityColor("red");
+    }
+    else {
+      setFieldCapacityColor("white");
+    }
+    if (!fuelTypeIsValid) {
+      setFieldFuelTypeColor("red");
+    }
+    else {
+      setFieldFuelTypeColor("white");
+    }
+    if (carPlateIsValid && modelAndColourIsvalid && capacityIsValid && fuelTypeIsValid) {
+      let driverDTO = {
+        carPlate: carPlate,
+        modelAndColour: modelAndColour,
+        capacity: capacity,
+        fuelType: fuelType,
+      };
+      let driver = await useDriverApi(await SecureStore.getItemAsync("idToken")).updateDriver(carPlate, driverDTO);
+      if (driver) {
+        setButtonMessage("Success!");
+      }
     }
   };
 
@@ -106,6 +149,7 @@ const VehicleSettings = () => {
               onChangeText={setModelAndColour}
               variant="underlined"
               size="lg"
+              borderColor={fieldModelAndColourColor}
             />
             <FormControl.Label style={{ marginTop: 15 }}>
               Capacity
@@ -120,7 +164,7 @@ const VehicleSettings = () => {
               setItems={setCapacityItems}
               style={{
                 backgroundColor: "black",
-                borderColor: "white",
+                borderColor: fieldCapacityColor,
               }}
               placeholderStyle={{
                 color: "grey",
@@ -149,7 +193,7 @@ const VehicleSettings = () => {
               setItems={setFuelTypeItems}
               style={{
                 backgroundColor: "black",
-                borderColor: "white",
+                borderColor: fieldFuelTypeColor,
               }}
               placeholderStyle={{
                 color: "grey",

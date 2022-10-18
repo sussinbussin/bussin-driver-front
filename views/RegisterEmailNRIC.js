@@ -15,9 +15,9 @@ import { GlobalContext } from "../contexts/global";
 import { useLoginApi } from "../api/LoginApi";
 import { useUserApi } from "../api/UsersApi";
 import * as SecureStore from "expo-secure-store";
-import TopBar from "../components/TopBar";
 import dayjs from "dayjs";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import TopBarBack from "../components/TopBarBack";
 
 const RegisterEmailNRIC = ({ navigation, route }) => {
   const { state, dispatch } = useContext(GlobalContext);
@@ -67,11 +67,16 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
 
   const [name, setName] = useState("");
   const [nric, setNRIC] = useState("");
-  const [emailValue, setEmailValue] = useState("");
+  const [email, setEmail] = useState("");
   const [dob, setDob] = useState(new Date());
   const [userCreationDTO, setUserCreationDTO] = useState("");
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const [fieldNRICColor, setFieldNRICColor] = useState("white");
+  const [fieldNameColor, setFieldNameColor] = useState("white");
+  const [fieldEmailColor, setFieldEmailColor] = useState("white");
+  const [fieldDobColor, setFieldDobColor] = useState("white");
 
   const { createUser } = useUserApi(userCreationDTO);
 
@@ -88,29 +93,65 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
   };
 
   const registerUser = async function () {
-    const phoneNumValue = route.params.phoneNum;
+    setNRIC(nric.toUpperCase());
+    const nricIsValid = (nric.charAt(0)==='S' || nric.charAt(0)==='T') && nric.length===9;
+    const nameIsValid = name.length >= 4;
+    const emailIsValid = email.toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+    let sixteenYearsAgo = new Date();
+    sixteenYearsAgo.setFullYear(sixteenYearsAgo.getFullYear() - 16);
+    const dobIsValid = dob < sixteenYearsAgo;
+    if(!nricIsValid){
+      setFieldNRICColor("red.500");
+    }
+    else{
+      setFieldNRICColor("white")
+    }
+    if(!nameIsValid){
+      setFieldNameColor("red.500")
+    }
+    else{
+      setFieldNameColor("white")
+    }
+    if(!emailIsValid){
+      setFieldEmailColor("red.500")
+    }
+    else{
+      setFieldEmailColor("white")
+    }
+    if(!dobIsValid){
+      setFieldDobColor("red.500")
+    }
+    else{
+      setFieldDobColor("white")
+    }
+    if(nricIsValid && nameIsValid && emailIsValid && dobIsValid){
+      const phoneNumValue = route.params.phoneNum;
 
-    let userCreationDTO = {
-      password: password,
-      username: username,
-      userDTO: {
-        nric: nric,
-        name: name,
-        dob: dob,
-        mobile: phoneNumValue,
-        email: emailValue,
-        isDriver: false,
-      },
-    };
-    setUserCreationDTO(userCreationDTO);
-    await createUser(userCreationDTO);
-
-    await loginUser();
+      let userCreationDTO = {
+        password: password,
+        username: username,
+        userDTO: {
+          nric: nric,
+          name: name,
+          dob: dob,
+          mobile: phoneNumValue,
+          email: email,
+          isDriver: false,
+        },
+      };
+      setUserCreationDTO(userCreationDTO);
+      await createUser(userCreationDTO);
+  
+      await loginUser();
+    }
   };
 
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
-      <TopBar></TopBar>
+      <TopBarBack/>
 
       <Box
         w="100%"
@@ -132,6 +173,7 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
               onChangeText={(text) => setNRIC(text)}
               variant="underlined"
               size="lg"
+              borderColor={fieldNRICColor}
             />
             <FormControl.Label style={{ marginTop: 15 }}>
               Enter your name
@@ -142,16 +184,18 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
               onChangeText={(text) => setName(text)}
               variant="underlined"
               size="lg"
+              borderColor={fieldNameColor}
             />
             <FormControl.Label style={{ marginTop: 15 }}>
               Enter your email address
             </FormControl.Label>
             <Input
-              value={emailValue}
+              value={email}
               placeholder={"Email@mail.com"}
-              onChangeText={(text) => setEmailValue(text)}
+              onChangeText={(text) => setEmail(text)}
               variant="underlined"
               size="lg"
+              borderColor={fieldEmailColor}
             />
             <FormControl.Label style={{ marginTop: 15 }}>
               Enter your date of birth
@@ -163,7 +207,7 @@ const RegisterEmailNRIC = ({ navigation, route }) => {
                   paddingLeft: 0,
                 }}
               >
-                {dayjs(dob).format("DD/MM/YYYY")}
+                <Text color={fieldDobColor}>{dayjs(dob).format("DD/MM/YYYY")}</Text>
               </Button>
             </HStack>
             <DateTimePickerModal

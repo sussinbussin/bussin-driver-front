@@ -13,28 +13,49 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
-import TopBar from "../components/TopBar";
+import TopBarBack from "../components/TopBarBack";
 
 const RegisterName = ({ navigation, route }) => {
   // for stuff like username, email, name, dob etc.
   const { state } = useContext(GlobalContext);
   if (!state.flags.registerName) return null;
 
+  const [fieldUsernameColor, setFieldUsernameColor] = useState("white");
+  const [fieldPasswordColor, setFieldPasswordColor] = useState("white");
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const submit = () => {
-    navigation.navigate("RegisterEmailNRIC", {
-      username: username,
-      password: password,
-      phoneNum: route.params.phoneNum,
-    });
+    const usernameIsValid = username.length >= 4 && username.length <= 20;
+    const passwordIsValid = password.length >=8 && password.length <= 32;
+
+    if(!usernameIsValid){
+      setFieldUsernameColor("red.500");
+    }
+    else{
+      setFieldUsernameColor("white");
+    }
+
+    if(!passwordIsValid){
+      setFieldPasswordColor("red.500");
+    }
+    else{
+      setFieldPasswordColor("white");
+    }
+
+    if(usernameIsValid && passwordIsValid){
+      navigation.navigate("RegisterEmailNRIC", {
+        username: username,
+        password: password,
+        phoneNum: route.params.phoneNum,
+      });
+    }
   };
 
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
-      <TopBar></TopBar>
-
+      <TopBarBack/>
       <Box
         w="100%"
         maxWidth="500px"
@@ -55,6 +76,7 @@ const RegisterName = ({ navigation, route }) => {
               onChangeText={(text) => setUsername(text)}
               variant="underlined"
               size="lg"
+              borderColor={fieldUsernameColor}
             />
             <FormControl.Label style={{ marginTop: 15 }}>
               Choose a Password
@@ -66,6 +88,7 @@ const RegisterName = ({ navigation, route }) => {
               onChangeText={(text) => setPassword(text)}
               variant="underlined"
               size="lg"
+              borderColor={fieldPasswordColor}
             />
 
             {/* can bring to set email or something */}

@@ -13,9 +13,8 @@ import {
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
 import * as SecureStore from "expo-secure-store";
-import TopBar from "../components/TopBar";
 import DropdownPicker from "react-native-dropdown-picker";
-import { useCreateDriverAPI } from "../api/DriverCreateAPI";
+import { useDriverApi } from "../api/DriverApi";
 import TopBarBack from "../components/TopBarBack";
 
 const RegisterDriver = ({ navigation, route }) => {
@@ -97,7 +96,7 @@ const RegisterDriver = ({ navigation, route }) => {
         fuelType: fuelType,
       };
   
-      let driver = await useCreateDriverAPI(await SecureStore.getItemAsync("idToken"), await SecureStore.getItemAsync("uuid"), driverDTO).createDriver();
+      let driver = await useDriverApi(await SecureStore.getItemAsync("idToken")).createDriver(await SecureStore.getItemAsync("uuid"), driverDTO);
       if (driver) {
         await SecureStore.setItemAsync(
           "carPlate",

@@ -35,7 +35,19 @@ const useDriverApi = (token) => {
           }
     }
 
-    return { getDriverByCarPlate, updateDriver };
+    const createDriver = async (uuid, driverDTO) => {
+      let data = null;
+      try {
+          const res = await api.post(`driver/${uuid}`, {json: driverDTO});
+          data = await res.json();
+          console.log(data);
+          return data;
+      } catch (error) {
+          return;
+      }
+  };
+
+    return { getDriverByCarPlate, updateDriver, createDriver };
 }
 
 export { useDriverApi };

@@ -1,55 +1,38 @@
-import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
-import { useState } from "react";
-import { cognitoPool } from "./CognitoPool";
+import { COGNITO_ENDPOINT, COGNITO_CLIENTID } from "@env";
+import ky from "ky";
+import jwtDecode from "jwt-decode";
+
+const api = ky.create({
+  prefixUrl: COGNITO_ENDPOINT,
+});
 
 const useLoginApi = (username, password) => {
-  const [token, setToken] = useState("");
-
   const loginUser = async () => {
+    let token = null;
     let error = false;
-    console.log("Attempting to login in with " + username + password);
     try {
-      const user = new CognitoUser({
-        Username: username,
-        Pool: cognitoPool,
-      });
-
-      const authDetails = new AuthenticationDetails({
-        Username: username,
-        Password: password,
-      });
-
-      user.authenticateUser(authDetails, {
-        onSuccess: async (res) => {
-          setToken(res);
-          console.log("Set the token");
+      console.log(username + password);
+      const res = await api.post("", {
+        json: {
+          AuthParameters: {
+            USERNAME: username,
+            PASSWORD: password,
+          },
+          AuthFlow: "USER_PASSWORD_AUTH",
+          ClientId: COGNITO_CLIENTID,
         },
-
-        onFailure: (err) => {
-          console.log(err);
-          switch (err.name) {
-            case "UserNotConfirmedException":
-              return Alert.alert(General.Error, Auth.UserNotConfirmed);
-            case "NotAuthorizedException":
-              return Alert.alert(General.Error, Auth.IncorrectCredentials);
-            default:
-              return Alert.alert(General.Error, General.SomethingWentWrong);
-          }
+        headers: {
+          "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
+          "Content-Type": "application/x-amz-json-1.1",
         },
       });
+      token = await res.json();
 
-      function pause() {
-        return new Promise((res) => {
-          setTimeout(() => {
-            res();
-          }, 1000);
-        });
-      }
-      await pause();
-      console.log("Result: " + token);
-      let authToken = token.idToken.jwtToken;
-      let email = token.idToken.payload.email;
+      let authToken = token.AuthenticationResult.IdToken;
+      let decodeToken = jwtDecode(authToken);
+      let email = decodeToken.email;
 
+      console.log(email)
       return { authToken, email };
     } catch (error) {
       console.log(error);

@@ -10,16 +10,16 @@ import {
   Center,
   View,
 } from "native-base";
-import { TextInput } from "react-native";
+import { TextInput, StyleSheet } from "react-native";
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/global";
-import TopBar from "../components/TopBar";
+import TopBarBack from "../components/TopBarBack";
 
 const Register = ({ navigation }) => {
   const { state } = useContext(GlobalContext);
   if (!state.flags.register) return null;
 
-
+  const [fieldPhoneColor, setFieldPhoneColor] = useState("white");
   const [phoneNum, setPhoneNum] = useState("");
   const handlePhoneNum = (value) => setPhoneNum(value);
 
@@ -32,9 +32,10 @@ const Register = ({ navigation }) => {
       setPhoneNum({
         phoneNum: false,
       });
-      // TODO: alert invalid number
+      setFieldPhoneColor("red.500");
     
     } else {
+      setFieldPhoneColor("white")
       navigation.navigate("RegisterName", {
         phoneNum: phoneNum,
       })
@@ -43,7 +44,7 @@ const Register = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
-      <TopBar></TopBar>
+      <TopBarBack/>
       <Heading size="xl" style={{ paddingTop: 30 }}>
         Register
       </Heading>
@@ -69,6 +70,7 @@ const Register = ({ navigation }) => {
               maxLength={8}
               variant="underlined"
               size="lg"
+              borderColor={fieldPhoneColor}
             />
 
             <Button
@@ -149,5 +151,11 @@ const Register = ({ navigation }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  textInput: {
+   color: 'green',
+  },
+ });
 
 export default Register;

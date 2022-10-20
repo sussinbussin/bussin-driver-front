@@ -19,6 +19,7 @@ import RegisterName from "./views/RegisterName";
 import RegisterEmailNRIC from "./views/RegisterEmailNRIC";
 import RegisterDriver from "./views/RegisterDriver"
 import ScheduledRides from "./views/ScheduledRides";
+import VehicleSettings from "./views/VehicleSettings";
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -43,6 +44,7 @@ const App = () => {
             <Stack.Screen name="RegisterEmailNRIC" component={RegisterEmailNRIC} />
             <Stack.Screen name="RegisterDriver" component={RegisterDriver} />
             <Stack.Screen name="ScheduledRides" component={ScheduledRides} />
+            <Stack.Screen name="VehicleSettings" component={VehicleSettings} />
           </Stack.Navigator>
         </NavigationContainer>
         <StatusBar></StatusBar>

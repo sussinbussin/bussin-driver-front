@@ -17,12 +17,31 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlobalContext } from "../contexts/global";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { useUserApi } from "../api/UsersApi";
+import * as SecureStore from "expo-secure-store";
 
 const Profile = () => {
   const { state } = useContext(GlobalContext);
   if (!state.flags.profile) return null;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+
+  const [username, setUsername] = useState("");
+  const [rendered, setRendered] = useState(false);
+  const renderDefaults = async () => {
+    let token = await SecureStore.getItemAsync("idToken");
+    let cp = await SecureStore.getItemAsync("uuid");
+
+    let user = await useUserApi(token).getUserByUuid(cp);
+
+    setUsername(user.name);
+
+    setRendered(true);
+  }
+
+  if(!rendered){
+    renderDefaults();
+  }
 
   return (
     <View>
@@ -43,9 +62,9 @@ const Profile = () => {
           </View>
 
           <View style={{ flex: 2, marginTop: 8 }}>
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Jolene</Text>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{username}</Text>
 
-            <View flexDirection="row">
+            {/* <View flexDirection="row">
               <AntDesign
                 name="star"
                 size={15}
@@ -54,7 +73,7 @@ const Profile = () => {
               />
 
               <Text style={{ fontSize: 16 }}>69.69</Text>
-            </View>
+            </View> */}
           </View>
           <Box style={{ flex: 1, backgroundColor: 0 }}></Box>
 

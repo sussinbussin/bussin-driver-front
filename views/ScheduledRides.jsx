@@ -19,6 +19,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlobalContext } from "../contexts/global";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import * as SecureStore from "expo-secure-store";
+import { useDriverApi } from "../api/DriverApi"
 
 // hardcoded data
 // TODO: get data from api
@@ -87,6 +89,11 @@ const DATA = [
     status: "Upcoming",
   },
 ];
+
+// console.log(await SecureStore.getItemAsync("carPlate"));
+
+// const plannedRouteHandler = useDriverApi(token);
+// DATA = getDriverByCarPlate()
 
 const ScheduledRides = () => {
   const { state } = useContext(GlobalContext);

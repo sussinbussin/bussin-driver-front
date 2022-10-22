@@ -22,10 +22,10 @@ const usePlannedRouteApi = (token) => {
     //     }
     // }
 
-    const createPlannedRoute = async (plannedRouteDTO) => {
+    const createPlannedRoute = async (plannedRouteDTO, carPlate) => {
         let data = null;
         try {
-            const res = await api.post(`planned/${plannedRouteDTO.id}`, {
+            const res = await api.post(`planned/${carPlate}`, {
                 json: plannedRouteDTO,
             });
             data = await res.json();

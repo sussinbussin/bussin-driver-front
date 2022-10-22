@@ -13,10 +13,52 @@ const initialState = {
   flags: {
     ...flags,
   },
+  stage: {
+    level: "CHOOSING_DESTINATION",
+    display: "search",
+    locationSearch: {
+      text: "Where to?",
+    },
+  },
+  dest: {
+    item: null,
+    geo: null,
+  },
+  start: {
+    item: null,
+    geo: null,
+  },
+  token: null,
+  driver: null,
 };
 const initState = () => initialState;
 const globalReducer = (state, action) => {
   switch (action.type) {
+    case "MODIFY_STAGE":
+      return {
+        ...state,
+        stage: { ...action.payload },
+      };
+    case "SET_DESTINATION":
+      return {
+        ...state,
+        dest: { ...action.payload },
+      };
+    case "SET_START":
+      return {
+        ...state,
+        start: { ...action.payload },
+      };
+      case "SET_DRIVER":
+      return {
+        ...state,
+        driver: action.payload,
+      };
+    case "SET_TOKEN":
+      return {
+        ...state,
+        token: action.payload,
+      };
     default:
       return state;
   }

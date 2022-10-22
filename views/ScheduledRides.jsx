@@ -24,7 +24,7 @@ import { useDriverApi } from "../api/DriverApi";
 
 // hardcoded data
 // TODO: get data from api
-const DATA = [
+let DATA = [
   {
     id: "1",
     to: "City Hall",
@@ -104,8 +104,21 @@ const getPlannedRoutes = async () => {
   const carPlate = await handleGetToken("carPlate", );
 
   let driver = await useDriverApi(idToken, carPlate).getDriverByCarPlate(carPlate);
-  console.log("Planned Routes: " + driver.plannedRoutes);
-  // DATA = getDriverByCarPlate(carPlate)
+  const plannedRoutes = driver.plannedRoutes;
+  let routes = [];
+  for (let i = 0; i < plannedRoutes.length; i++) {
+    routes.push({
+      id: plannedRoutes[i].id,
+      to: "",
+      from: "",
+      cost: "",
+      date: plannedRoutes[i].dateTime,
+      time: plannedRoutes[i].dateTime,
+      noPassengers: plannedRoutes[i].capacity,
+      status: "",
+    });
+  }
+  DATA = routes;
 }
 
 const ScheduledRides = () => {

@@ -48,7 +48,7 @@ const Login = ({ navigation }) => {
       return;
     }
 
-    let user = await useUserApi(token).getUser(email);
+    let user = await useUserApi(token, email).getUser(email);
     if (!user) {
       //this one hong gan lo
       return;
@@ -58,6 +58,7 @@ const Login = ({ navigation }) => {
       "idToken",
       JSON.stringify(token).replace(/['"]+/g, "")
     );
+    console.log(user.id)
     await SecureStore.setItemAsync(
       "uuid",
       JSON.stringify(user.id).replace(/['"]+/g, '')

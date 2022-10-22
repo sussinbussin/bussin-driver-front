@@ -1,6 +1,8 @@
 import { GOOGLE_API_KEY } from "@env";
 import { View } from "native-base";
 import HomeTopBar from "../components/HomeTopBar";
+import PlanningRoute from "../components/PlanningRoute";
+import LocationSearch from "../components/LocationSearch";
 import MapView, { Marker } from "react-native-maps";
 import { PROVIDER_GOOGLE } from "react-native-maps";
 import { mapStyle } from "../theming/mapStyle";
@@ -29,6 +31,17 @@ const Home = ({ navigation }) => {
     })();
   }, []);
 
+  const bottomBar = () => {
+    if (state.stage.display == "search")
+      return <LocationSearch style={styles.search} />;
+    if (state.stage.display == "start") return <PlanningRoute />;
+  };
+
+  // const areBothLocationsGeoChosen = () => {
+  //   return state.dest.geo && state.start.geo;
+  // };
+
+  
   return (
     <View
       style={{
@@ -57,8 +70,17 @@ const Home = ({ navigation }) => {
         ></MapView>
       )}
       <HomeTopBar />
+      {bottomBar()}
     </View>
   );
 };
+const styles = StyleSheet.create({
+  //map: {
+  //  width: Dimensions.get("window").width,
+  //  height: Dimensions.get("window").height,
+  //  position: "absolute",
+  //  zIndex: -1,
+  //},
+});
 
 export default Home;

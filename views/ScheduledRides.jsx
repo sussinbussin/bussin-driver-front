@@ -20,7 +20,7 @@ import { GlobalContext } from "../contexts/global";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import * as SecureStore from "expo-secure-store";
-import { useDriverApi } from "../api/DriverApi"
+import { useDriverApi } from "../api/DriverApi";
 
 // hardcoded data
 // TODO: get data from api
@@ -90,10 +90,23 @@ const DATA = [
   },
 ];
 
-// console.log(await SecureStore.getItemAsync("carPlate"));
+const getPlannedRoutes = async () => {
+  const handleGetToken = async (key) => {
+    const tokenFromPersistentState = await SecureStore.getItemAsync(
+      key, 
+    );
+    if (tokenFromPersistentState) {
+      return tokenFromPersistentState;
+    }
+  };
 
-// const plannedRouteHandler = useDriverApi(token);
-// DATA = getDriverByCarPlate()
+  const idToken = await handleGetToken("idToken", );
+  const carPlate = await handleGetToken("carPlate", );
+
+  let driver = await useDriverApi(idToken, carPlate).getDriverByCarPlate(carPlate);
+  console.log("Planned Routes: " + driver.plannedRoutes);
+  // DATA = getDriverByCarPlate(carPlate)
+}
 
 const ScheduledRides = () => {
   const { state } = useContext(GlobalContext);
@@ -103,6 +116,8 @@ const ScheduledRides = () => {
 
   // for dynamic rendering or smth idk
   const [selectedId, setSelectedId] = useState(null);
+
+  getPlannedRoutes();
 
   const renderItem = ({ item }) => (
     <List style={{ paddingTop: 20, paddingBottom: 20 }}>

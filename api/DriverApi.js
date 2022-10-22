@@ -10,6 +10,7 @@ const useDriverApi = (token) => {
     });
 
     const getDriverByCarPlate = async (carPlate) => {
+        console.log()
         let data = null;
         try {
           const res = await api.get(`driver/${carPlate}`);

@@ -85,6 +85,7 @@ const Login = ({ navigation }) => {
         type: "SET_TOKEN",
         payload: token,
       });
+
       navigation.navigate("Home");
     } else {
       navigation.navigate("RegisterDriver");

@@ -1,6 +1,8 @@
 import { GOOGLE_API_KEY } from "@env";
 
 const usePlacesAPI = (query) => {
+  // Console log fix
+  console.log()
   const findPlaces = async () => {
     const url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?";
     const res = await fetch(
@@ -12,7 +14,6 @@ const usePlacesAPI = (query) => {
         })
     );
     const result = await res.json(); //todo: error checking
-    console.log();
     return result;
   };
 
@@ -28,6 +29,7 @@ const usePlacesAPI = (query) => {
     );
 
     const result = await res.json();
+    console.log("Get Geometry: " + JSON.stringify(result))
     return result.result.geometry.location;
   };
   return { findPlaces, getGeometry };

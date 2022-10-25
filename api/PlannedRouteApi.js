@@ -23,6 +23,7 @@ const usePlannedRouteApi = (token) => {
     // }
 
     const createPlannedRoute = async (plannedRouteDTO, carPlate) => {
+        console.log()
         let data = null;
         try {
             const res = await api.post(`planned/${carPlate}`, {

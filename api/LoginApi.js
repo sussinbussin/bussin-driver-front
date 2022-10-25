@@ -11,7 +11,7 @@ const useLoginApi = (username, password) => {
     let token = null;
     let error = false;
     try {
-      // console.log(username + password);
+      console.log(username + password);
       const res = await api.post("", {
         json: {
           AuthParameters: {

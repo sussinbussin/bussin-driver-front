@@ -102,18 +102,18 @@ import {
         const carPlate = await handleGetToken("carPlate", );
 
         let plannedRouteDTO = {
-        id: "",
-        plannedFrom: "",
-        plannedTo: "",
-        dateTime: "2022-10-09T01:09:34.337Z",
-        capacity: 4,
-        originLatitude: state.start.geo.lat,
-        originLongitude: state.start.geo.lng,
-        destLatitude: state.dest.geo.lat,
-        destLongitude: state.dest.geo.lng,
+          id: "",
+          plannedFrom: state.start.item.structured_formatting.main_text,
+          plannedTo: state.dest.item.structured_formatting.main_text,
+          dateTime: date,
+          capacity: 4,
+          originLatitude: state.start.geo.lat,
+          originLongitude: state.start.geo.lng,
+          destLatitude: state.dest.geo.lat,
+          destLongitude: state.dest.geo.lng,
         };
 
-      let plannedRoute = usePlannedRouteApi(idToken, plannedRouteDTO, carPlate).createPlannedRoute(plannedRouteDTO, carPlate);
+      let plannedRoute = await usePlannedRouteApi(idToken, plannedRouteDTO, carPlate).createPlannedRoute(plannedRouteDTO, carPlate);
       if (plannedRoute){
         console.log("works yay");
         navigation.navigate("ScheduledRides");

@@ -13,7 +13,7 @@ import {
   List,
   FlatList,
 } from "native-base";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import TopBarBack from "../components/TopBarBack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlobalContext } from "../contexts/global";
@@ -21,76 +21,24 @@ import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import * as SecureStore from "expo-secure-store";
 import { useDriverApi } from "../api/DriverApi";
+import dayjs from "dayjs";
+import arraySupport from "dayjs/plugin/arraySupport";
 
-// hardcoded data
-// TODO: get data from api
-let DATA = [
-  {
-    id: "1",
-    to: "City Hall",
-    from: "Kallang",
-    cost: "$5.00",
-    date: "Mon, 3 Oct 2022",
-    time: "7:00AM to 7:15AM",
-    noPassengers: "1",
-    status: "Past",
-  },
-  {
-    id: "2",
-    to: "SMU",
-    from: "Changi",
-    cost: "$19.99",
-    date: "Mon, 17 Oct 2022",
-    time: "7:00AM to 7:15AM",
-    noPassengers: "1",
-    status: "Upcoming",
-  },
-  {
-    id: "3",
-    to: "Changi",
-    from: "Woodlands",
-    cost: "$25.69",
-    date: "Mon, 10 Oct 2022",
-    time: "7:00PM to 7:15PM",
-    noPassengers: "2",
-    status: "Current",
-  },
+function compare( a, b ) {
+  if ( a.date == b.date ){
+    if ( a.time < b.time ){
+      return 1;
+    } else {
+      return -1;
+    }
+  } else if (a.date < b.date) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
 
-  {
-    id: "4",
-    to: "Changi",
-    from: "Woodlands",
-    cost: "$25.69",
-    date: "Mon, 10 Oct 2022",
-    time: "7:00PM to 7:15PM",
-    noPassengers: "2",
-    status: "Current",
-  },
-
-  {
-    id: "5",
-    to: "SMU",
-    from: "Changi",
-    cost: "$19.99",
-    date: "Mon, 17 Oct 2022",
-    time: "7:00AM to 7:15AM",
-    noPassengers: "1",
-    status: "Upcoming",
-  },
-
-  {
-    id: "6",
-    to: "Heaven",
-    from: "Kallang",
-    cost: "$19.99",
-    date: "Mon, 17 Oct 2022",
-    time: "7:00AM to 7:15AM",
-    noPassengers: "1",
-    status: "Upcoming",
-  },
-];
-
-const getPlannedRoutes = async () => {
+const getPlannedRoutes = async (setData) => {
   const handleGetToken = async (key) => {
     const tokenFromPersistentState = await SecureStore.getItemAsync(
       key, 
@@ -103,22 +51,44 @@ const getPlannedRoutes = async () => {
   const idToken = await handleGetToken("idToken", );
   const carPlate = await handleGetToken("carPlate", );
 
+  let today = dayjs();
+  dayjs.extend(arraySupport)
+
   let driver = await useDriverApi(idToken, carPlate).getDriverByCarPlate(carPlate);
   const plannedRoutes = driver.plannedRoutes;
   let routes = [];
   for (let i = 0; i < plannedRoutes.length; i++) {
+    plannedRoutes[i].dateTime[1] -= 1;
+    let date = dayjs(plannedRoutes[i].dateTime.slice(0, 5))
+    console.log("Routes")
+    console.log(plannedRoutes[i])
+    let status = ""
+    if (plannedRoutes[i].rides.length == 0) {
+      if (date < today) {
+        status = "Expired";
+      } else {
+        status = "Available"
+      }
+    } else {
+      if (date < today) {
+        status = "Done";
+      } else {
+        status = "Booked"
+      }
+    }
+    console.log()
     routes.push({
       id: plannedRoutes[i].id,
-      to: "",
-      from: "",
+      to: plannedRoutes[i].plannedTo,
+      from: plannedRoutes[i].plannedFrom,
       cost: "",
-      date: plannedRoutes[i].dateTime,
-      time: plannedRoutes[i].dateTime,
+      date: date.format('DD/MM/YYYY'),
+      time: date.format('hh:mmA'),
       noPassengers: plannedRoutes[i].capacity,
-      status: "",
+      status: status,
     });
   }
-  DATA = routes;
+  setData(routes.sort(compare));
 }
 
 const ScheduledRides = () => {
@@ -129,34 +99,38 @@ const ScheduledRides = () => {
 
   // for dynamic rendering or smth idk
   const [selectedId, setSelectedId] = useState(null);
+  const [data, setData] = useState([]);
 
-  getPlannedRoutes();
+  useEffect(() => {
+    getPlannedRoutes(setData);
+  }, []);
 
   const renderItem = ({ item }) => (
     <List style={{ paddingTop: 20, paddingBottom: 20 }}>
       <View style={{ marginLeft: 15 }}>
         <View flexDirection="row" style={{ marginBottom: 5 }}>
+          
+        </View>
+        <View flexDirection="row" style={{ marginBottom: 5 }}>
+          <Text fontSize="md" style={{ marginRight: 5}}>
+            From:
+          </Text>
           <Text fontSize="md" fontWeight="bold">
             {item.from}
           </Text>
-          <AntDesign
+        </View>
+        <View flexDirection="row" style={{ marginBottom: 5 }}>
+          <Text fontSize="md" style={{ marginRight: 23}}>
+            To:
+          </Text>
+          {/* <AntDesign
             name="arrowright"
             size={20}
             color="white"
             style={{ marginLeft: 5, marginRight: 5, marginTop: 2.5 }}
-          />
+          /> */}
           <Text fontSize="md" fontWeight="bold">
             {item.to}
-          </Text>
-
-          <Text
-            fontSize="md"
-            fontWeight="semibold"
-            textAlign="right"
-            flex="1"
-            marginRight="5"
-          >
-            {item.status}
           </Text>
         </View>
 
@@ -200,6 +174,15 @@ const ScheduledRides = () => {
             style={{ marginRight: 7 }}
           />
           <Text>{item.noPassengers} Passenger</Text>
+          <Text
+            fontSize="md"
+            fontWeight="semibold"
+            textAlign="right"
+            flex="1"
+            marginRight="5"
+          >
+                {item.status}
+          </Text>
         </View>
 
         <Text>{item.name}</Text>
@@ -223,7 +206,7 @@ const ScheduledRides = () => {
       </Text>
 
       <FlatList
-        data={DATA}
+        data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         style={{

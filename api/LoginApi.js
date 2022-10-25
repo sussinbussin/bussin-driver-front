@@ -11,7 +11,7 @@ const useLoginApi = (username, password) => {
     let token = null;
     let error = false;
     try {
-      console.log(username + password);
+      // console.log(username + password);
       const res = await api.post("", {
         json: {
           AuthParameters: {
@@ -25,8 +25,8 @@ const useLoginApi = (username, password) => {
           "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
           "Content-Type": "application/x-amz-json-1.1",
         },
-      });
-      token = await res.json();
+      }).json();
+      token = await res;
 
       let authToken = token.AuthenticationResult.IdToken;
       let decodeToken = jwtDecode(authToken);

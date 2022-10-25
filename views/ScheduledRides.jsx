@@ -19,10 +19,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlobalContext } from "../contexts/global";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import * as SecureStore from "expo-secure-store";
+import { useDriverApi } from "../api/DriverApi";
 
 // hardcoded data
 // TODO: get data from api
-const DATA = [
+let DATA = [
   {
     id: "1",
     to: "City Hall",
@@ -88,6 +90,37 @@ const DATA = [
   },
 ];
 
+const getPlannedRoutes = async () => {
+  const handleGetToken = async (key) => {
+    const tokenFromPersistentState = await SecureStore.getItemAsync(
+      key, 
+    );
+    if (tokenFromPersistentState) {
+      return tokenFromPersistentState;
+    }
+  };
+
+  const idToken = await handleGetToken("idToken", );
+  const carPlate = await handleGetToken("carPlate", );
+
+  let driver = await useDriverApi(idToken, carPlate).getDriverByCarPlate(carPlate);
+  const plannedRoutes = driver.plannedRoutes;
+  let routes = [];
+  for (let i = 0; i < plannedRoutes.length; i++) {
+    routes.push({
+      id: plannedRoutes[i].id,
+      to: "",
+      from: "",
+      cost: "",
+      date: plannedRoutes[i].dateTime,
+      time: plannedRoutes[i].dateTime,
+      noPassengers: plannedRoutes[i].capacity,
+      status: "",
+    });
+  }
+  DATA = routes;
+}
+
 const ScheduledRides = () => {
   const { state } = useContext(GlobalContext);
   if (!state.flags.scheduledRides) return null;
@@ -96,6 +129,8 @@ const ScheduledRides = () => {
 
   // for dynamic rendering or smth idk
   const [selectedId, setSelectedId] = useState(null);
+
+  getPlannedRoutes();
 
   const renderItem = ({ item }) => (
     <List style={{ paddingTop: 20, paddingBottom: 20 }}>

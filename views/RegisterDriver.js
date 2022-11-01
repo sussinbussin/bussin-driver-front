@@ -49,11 +49,11 @@ const RegisterDriver = ({ navigation, route }) => {
 
   const [fuelTypeOpen, setFuelTypeOpen] = useState(false);
   const [fuelTypeItems, setFuelTypeItems] = useState([
-    { label: "92", value: "Type92" },
-    { label: "95", value: "Type95" },
-    { label: "98", value: "Type98" },
-    { label: "Premium", value: "TypePremium" },
-    { label: "Diesel", value: "TypeDiesel" },
+    { label: "92", value: "92" },
+    { label: "95", value: "95" },
+    { label: "98", value: "98" },
+    { label: "Premium", value: "Premium" },
+    { label: "Diesel", value: "Diesel" },
   ]);
 
   const makeDriver = async function () {
@@ -61,7 +61,7 @@ const RegisterDriver = ({ navigation, route }) => {
     const carPlateIsValid = carPlate.length >= 4 && carPlate.length <= 8;
     const modelAndColourIsvalid = modelAndColour.length > 4 && modelAndColour.length < 255;
     const capacityIsValid = capacity >= 2 && capacity <= 12;
-    const fuelTypeIsValid = fuelType === 'Type92' || fuelType === 'Type95' || fuelType === 'Type98' || fuelType === 'TypePremium' || fuelType === 'TypeDiesel';
+    const fuelTypeIsValid = fuelType === '92' || fuelType === '95' || fuelType === '98' || fuelType === 'Premium' || fuelType === 'Diesel';
 
     if(!carPlateIsValid){
       setFieldCarPlateColor("red.500");

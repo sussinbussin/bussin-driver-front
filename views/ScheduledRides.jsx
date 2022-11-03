@@ -20,7 +20,7 @@ import { GlobalContext } from "../contexts/global";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import * as SecureStore from "expo-secure-store";
-import { usePlannedRouteApi } from "../api/PlannedRouteApi";
+import { useDriverApi } from "../api/DriverApi";
 import dayjs from "dayjs";
 import arraySupport from "dayjs/plugin/arraySupport";
 
@@ -45,10 +45,10 @@ const getPlannedRoutes = async (setData) => {
   let today = dayjs();
   dayjs.extend(arraySupport)
 
-  let data = await usePlannedRouteApi(idToken, carPlate).getPlannedRoutes(carPlate);
-  const plannedRoutes = data[0].driver.plannedRoutes;
+  let driver = await useDriverApi(idToken).getDriverByCarPlate(carPlate);
+  const plannedRoutes = driver.plannedRoutes;
   let routes = [];
-  for (let i = 1; i < plannedRoutes.length; i++) {
+  for (let i = 0; i < plannedRoutes.length; i++) {
     plannedRoutes[i].dateTime[1] -= 1;
     let date = dayjs(plannedRoutes[i].dateTime.slice(0, 5))
     let status = ""

@@ -25,8 +25,8 @@ const useLoginApi = (username, password) => {
           "X-Amz-Target": "AWSCognitoIdentityProviderService.InitiateAuth",
           "Content-Type": "application/x-amz-json-1.1",
         },
-      }).json();
-      token = await res;
+      });
+      token = await res.json();
 
       let authToken = token.AuthenticationResult.IdToken;
       let decodeToken = jwtDecode(authToken);

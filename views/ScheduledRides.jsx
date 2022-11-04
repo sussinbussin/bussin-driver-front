@@ -24,18 +24,9 @@ import { useDriverApi } from "../api/DriverApi";
 import dayjs from "dayjs";
 import arraySupport from "dayjs/plugin/arraySupport";
 
+
 function compare( a, b ) {
-  if ( a.date == b.date ){
-    if ( a.time < b.time ){
-      return 1;
-    } else {
-      return -1;
-    }
-  } else if (a.date < b.date) {
-    return 1;
-  } else {
-    return -1;
-  }
+  return new Date(b.date) - new Date(a.date)
 }
 
 const getPlannedRoutes = async (setData) => {
@@ -54,14 +45,12 @@ const getPlannedRoutes = async (setData) => {
   let today = dayjs();
   dayjs.extend(arraySupport)
 
-  let driver = await useDriverApi(idToken, carPlate).getDriverByCarPlate(carPlate);
+  let driver = await useDriverApi(idToken).getDriverByCarPlate(carPlate);
   const plannedRoutes = driver.plannedRoutes;
   let routes = [];
   for (let i = 0; i < plannedRoutes.length; i++) {
     plannedRoutes[i].dateTime[1] -= 1;
     let date = dayjs(plannedRoutes[i].dateTime.slice(0, 5))
-    console.log("Routes")
-    console.log(plannedRoutes[i])
     let status = ""
     if (plannedRoutes[i].rides.length == 0) {
       if (date < today) {
@@ -82,8 +71,7 @@ const getPlannedRoutes = async (setData) => {
       to: plannedRoutes[i].plannedTo,
       from: plannedRoutes[i].plannedFrom,
       cost: "",
-      date: date.format('DD/MM/YYYY'),
-      time: date.format('hh:mmA'),
+      date: date,
       noPassengers: plannedRoutes[i].capacity,
       status: status,
     });
@@ -153,7 +141,7 @@ const ScheduledRides = () => {
             color="white"
             style={{ marginRight: 7 }}
           />
-          <Text>{item.date}</Text>
+          <Text>{item.date.format('DD/MM/YYYY')}</Text>
         </View>
 
         <View flexDirection="row" style={{ marginBottom: 5 }}>
@@ -163,7 +151,7 @@ const ScheduledRides = () => {
             color="white"
             style={{ marginRight: 7 }}
           />
-          <Text>{item.time}</Text>
+          <Text>{item.date.format('hh:mmA')}</Text>
         </View>
 
         <View flexDirection="row">
@@ -189,6 +177,22 @@ const ScheduledRides = () => {
       </View>
     </List>
   );
+
+  const deleteItem = itemId => {
+
+  };
+
+  const QuickActions = (qaItem) => {
+    return (
+      <View>
+        <View>
+          <Pressable onPress={() => deleteItem(qaItem.id)}>
+            <Text>Delete</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View>

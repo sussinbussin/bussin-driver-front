@@ -48,7 +48,7 @@ const Login = ({ navigation }) => {
       return;
     }
 
-    let user = await useUserApi(token, email).getUser(email);
+    let user = await useUserApi(token).getUser(email);
     if (!user) {
       //this one hong gan lo
       return;

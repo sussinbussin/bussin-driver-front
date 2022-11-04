@@ -9,18 +9,18 @@ const usePlannedRouteApi = (token) => {
         },
     });
 
-    // const getPlannedRoutes = async (carPlate) => {
-    //     console.log()
-    //     let data = null;
-    //     try {
-    //       const res = await api.get(`driver/${carPlate}`);
-    //       data = await res.json();
-    //       return data;
-    //     } catch (error) {
-    //       console.log(error);
-    //       return;
-    //     }
-    // }
+    const getPlannedRoutes = async (carPlate) => {
+        console.log()
+        let data = null;
+        try {
+          const res = await api.get(`driver/${carPlate}/plannedRoutes`);
+          data = await res.json();
+          return data;
+        } catch (error) {
+          console.log(error);
+          return;
+        }
+    }
 
     const createPlannedRoute = async (plannedRouteDTO, carPlate) => {
         console.log()
@@ -63,7 +63,7 @@ const usePlannedRouteApi = (token) => {
         }
     };
 
-    return { createPlannedRoute, updatePlannedRoute, deletePlannedRoute };
+    return { getPlannedRoutes, createPlannedRoute, updatePlannedRoute, deletePlannedRoute };
 }
 
 export { usePlannedRouteApi };

@@ -17,7 +17,7 @@ const useDriverApi = (token) => {
           return data;
         } catch (error) {
           console.log(error);
-          return;
+          return data;
         }
     }
 

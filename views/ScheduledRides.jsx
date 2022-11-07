@@ -23,49 +23,46 @@ import * as SecureStore from "expo-secure-store";
 import { useDriverApi } from "../api/DriverApi";
 import dayjs from "dayjs";
 import arraySupport from "dayjs/plugin/arraySupport";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 
-
-function compare( a, b ) {
-  return new Date(b.date) - new Date(a.date)
+function compare(a, b) {
+  return new Date(b.date) - new Date(a.date);
 }
 
-const getPlannedRoutes = async (setData) => {
-  const handleGetToken = async (key) => {
-    const tokenFromPersistentState = await SecureStore.getItemAsync(
-      key, 
-    );
-    if (tokenFromPersistentState) {
-      return tokenFromPersistentState;
-    }
-  };
-
-  const idToken = await handleGetToken("idToken", );
-  const carPlate = await handleGetToken("carPlate", );
+const getPlannedRoutes = async (setData, state) => {
+  const idToken = state.token;
+  const carPlate = state.driver.driver.carPlate;
 
   let today = dayjs();
-  dayjs.extend(arraySupport)
+  dayjs.extend(arraySupport);
 
-  let driver = await useDriverApi(idToken).getDriverByCarPlate(carPlate);
+  const { getDriverByCarPlate } = useDriverApi(idToken);
+  let driver = await getDriverByCarPlate(carPlate);
+
+  if (!driver) {
+    return;
+  }
+
   const plannedRoutes = driver.plannedRoutes;
   let routes = [];
   for (let i = 0; i < plannedRoutes.length; i++) {
     plannedRoutes[i].dateTime[1] -= 1;
-    let date = dayjs(plannedRoutes[i].dateTime.slice(0, 5))
-    let status = ""
+    let date = dayjs(plannedRoutes[i].dateTime.slice(0, 5));
+    let status = "";
     if (plannedRoutes[i].rides.length == 0) {
       if (date < today) {
         status = "Expired";
       } else {
-        status = "Available"
+        status = "Available";
       }
     } else {
       if (date < today) {
         status = "Done";
       } else {
-        status = "Booked"
+        status = "Booked";
       }
     }
-    console.log()
     routes.push({
       id: plannedRoutes[i].id,
       to: plannedRoutes[i].plannedTo,
@@ -77,7 +74,7 @@ const getPlannedRoutes = async (setData) => {
     });
   }
   setData(routes.sort(compare));
-}
+};
 
 const ScheduledRides = () => {
   const { state } = useContext(GlobalContext);
@@ -90,25 +87,23 @@ const ScheduledRides = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    getPlannedRoutes(setData);
+    getPlannedRoutes(setData, state);
   }, []);
 
   const renderItem = ({ item }) => (
-    <List style={{ paddingTop: 20, paddingBottom: 20 }}>
+    <List style={{ paddingTop: 20, paddingBottom: 20, borderWidth: 0, borderColor: "muted.300"}}>
       <View style={{ marginLeft: 15 }}>
+        <View flexDirection="row" style={{ marginBottom: 5 }}></View>
         <View flexDirection="row" style={{ marginBottom: 5 }}>
-          
-        </View>
-        <View flexDirection="row" style={{ marginBottom: 5 }}>
-          <Text fontSize="md" style={{ marginRight: 5}}>
+          <Text fontSize="md" style={{ marginRight: 5 }}>
             From:
           </Text>
-          <Text fontSize="md" fontWeight="bold">
+          <Text fontSize="md" fontWeight="bold" isTruncated maxWidth={280}>
             {item.from}
           </Text>
         </View>
         <View flexDirection="row" style={{ marginBottom: 5 }}>
-          <Text fontSize="md" style={{ marginRight: 23}}>
+          <Text fontSize="md" style={{ marginRight: 23 }}>
             To:
           </Text>
           {/* <AntDesign
@@ -117,7 +112,7 @@ const ScheduledRides = () => {
             color="white"
             style={{ marginLeft: 5, marginRight: 5, marginTop: 2.5 }}
           /> */}
-          <Text fontSize="md" fontWeight="bold">
+          <Text fontSize="md" fontWeight="bold" isTruncated maxWidth={280}>
             {item.to}
           </Text>
         </View>
@@ -141,7 +136,7 @@ const ScheduledRides = () => {
             color="white"
             style={{ marginRight: 7 }}
           />
-          <Text>{item.date.format('DD/MM/YYYY')}</Text>
+          <Text>{item.date.format("DD/MM/YYYY")}</Text>
         </View>
 
         <View flexDirection="row" style={{ marginBottom: 5 }}>
@@ -151,7 +146,7 @@ const ScheduledRides = () => {
             color="white"
             style={{ marginRight: 7 }}
           />
-          <Text>{item.date.format('hh:mmA')}</Text>
+          <Text>{item.date.format("hh:mmA")}</Text>
         </View>
 
         <View flexDirection="row">
@@ -169,7 +164,7 @@ const ScheduledRides = () => {
             flex="1"
             marginRight="5"
           >
-                {item.status}
+            {item.status}
           </Text>
         </View>
 
@@ -178,9 +173,7 @@ const ScheduledRides = () => {
     </List>
   );
 
-  const deleteItem = itemId => {
-
-  };
+  const deleteItem = (itemId) => {};
 
   const QuickActions = (qaItem) => {
     return (

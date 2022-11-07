@@ -9,12 +9,13 @@ import {
   Center,
   View,
 } from "native-base";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { GlobalContext } from "../contexts/global";
 import TopBar from "../components/TopBar";
 import { useLoginApi } from "../api/LoginApi";
 import { useUserApi } from "../api/UsersApi";
 import * as SecureStore from "expo-secure-store";
+import * as LocalAuthentication from "expo-local-authentication";
 
 const Login = ({ navigation }) => {
   //used for feature toggling
@@ -29,6 +30,43 @@ const Login = ({ navigation }) => {
   const handlePassword = (value) => setPassword(value);
   const handleUsername = (value) => setUsername(value);
 
+  useEffect(() => {
+    if (!state.biometrics) return;
+
+    (async () => {
+      //check if supported
+      const compat = await LocalAuthentication.hasHardwareAsync();
+      if (!compat) return;
+      const enrolled = await LocalAuthentication.isEnrolledAsync();
+      if (!enrolled) return;
+      //check if user logged in
+      let token = await SecureStore.getItemAsync("idToken");
+      if (!token) return;
+
+      const check = await LocalAuthentication.authenticateAsync();
+      if (!check.success) return;
+
+      const decodedToken = jwtDecode(token);
+      const { getUser } = useUserApi(token);
+      let user = await getUser(decodedToken.email);
+      if (!user) return;
+      dispatch({ type: "SET_DRIVER", payload: user });
+      dispatch({
+        type: "MODIFY_STAGE",
+        payload: {
+          ...state.stage,
+          locationSearch: {
+            text: `Where to, ${user.name}?`,
+          },
+        },
+      });
+      dispatch({
+        type: "SET_TOKEN",
+        payload: token,
+      });
+      navigation.navigate("Home");
+    })();
+  }, []);
   const submit = async () => {
     //for development
     if (username == "" || password == "") {
@@ -39,13 +77,13 @@ const Login = ({ navigation }) => {
     }
 
     let { token, email } = await loginUser();
-
+    console.log(token);
     if (!token) {
       //handle invalid user
       console.log("Invalid user");
       return;
     }
-    const { getUser, getUserByUuid } = useUserApi(token);
+    const { getUser, getFullUserByUuid } = useUserApi(token);
     let user = await getUser(email);
     if (!user) {
       //this one hong gan lo
@@ -58,13 +96,14 @@ const Login = ({ navigation }) => {
     }
 
     //get more details
-    let data = await getUserByUuid(user.id);
+    let data = await getFullUserByUuid(user.id);
+    console.log(data);
     //TODO handle invalid
-    if(!data){
+    if (!data) {
       return;
     }
 
-    dispatch({ type: "SET_USER", payload: data });
+    dispatch({ type: "SET_DRIVER", payload: data });
     dispatch({
       type: "MODIFY_STAGE",
       payload: {

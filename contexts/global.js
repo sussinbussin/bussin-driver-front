@@ -10,6 +10,7 @@ const flags = {
 };
 
 const initialState = {
+  biometrics: true,
   flags: {
     ...flags,
   },

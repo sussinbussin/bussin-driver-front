@@ -16,6 +16,7 @@
     "amazon-cognito-identity-js": "^5.2.11",
     "eslint": "^8.25.0",
     "expo": "~46.0.13",
+    "expo-local-authentication": "^12.3.0",
     "expo-location": "~14.3.0",
     "expo-secure-store": "~11.3.0",
     "expo-status-bar": "~1.4.0",

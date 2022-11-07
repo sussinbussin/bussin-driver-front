@@ -3,12 +3,14 @@ import { View } from "native-base";
 import HomeTopBar from "../components/HomeTopBar";
 import PlanningRoute from "../components/PlanningRoute";
 import LocationSearch from "../components/LocationSearch";
+import Tracking from "../components/Tracking";
 import MapView, { Marker } from "react-native-maps";
 import { PROVIDER_GOOGLE } from "react-native-maps";
 import { mapStyle } from "../theming/mapStyle";
 import { StyleSheet } from "react-native";
 import { GlobalContext } from "../contexts/global";
 import * as Location from "expo-location";
+import * as SecureStore from "expo-secure-store";
 import { useContext, useRef, useState, useEffect } from "react";
 
 const Home = ({ navigation }) => {
@@ -28,6 +30,8 @@ const Home = ({ navigation }) => {
         timeInterval: 5,
       });
       setLocation(location.coords);
+
+      //check if tracker is engaged.
     })();
   }, []);
 
@@ -35,13 +39,13 @@ const Home = ({ navigation }) => {
     if (state.stage.display == "search")
       return <LocationSearch style={styles.search} />;
     if (state.stage.display == "start") return <PlanningRoute />;
+    if (state.stage.display == "drive") return <Tracking />;
   };
 
   // const areBothLocationsGeoChosen = () => {
   //   return state.dest.geo && state.start.geo;
   // };
 
-  
   return (
     <View
       style={{

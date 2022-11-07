@@ -25,6 +25,7 @@ import dayjs from "dayjs";
 import arraySupport from "dayjs/plugin/arraySupport";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { useTrackApi } from "../api/TrackApi";
 
 function compare(a, b) {
   return new Date(b.date) - new Date(a.date);
@@ -47,10 +48,9 @@ const getPlannedRoutes = async (setData, state) => {
   const plannedRoutes = driver.plannedRoutes;
   let routes = [];
   for (let i = 0; i < plannedRoutes.length; i++) {
-    plannedRoutes[i].dateTime[1] -= 1; 
-    plannedRoutes[i].dateTime[3] += 8; 
-    let date = dayjs(plannedRoutes[i].dateTime.slice(0,5));
-    console.log(date);
+    plannedRoutes[i].dateTime[1] -= 1;
+    plannedRoutes[i].dateTime[3] += 8;
+    let date = dayjs(plannedRoutes[i].dateTime.slice(0, 5));
     let status = "";
     if (plannedRoutes[i].rides.length == 0) {
       if (date < today) {
@@ -79,7 +79,7 @@ const getPlannedRoutes = async (setData, state) => {
 };
 
 const ScheduledRides = () => {
-  const { state } = useContext(GlobalContext);
+  const { state, dispatch } = useContext(GlobalContext);
   if (!state.flags.scheduledRides) return null;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -92,8 +92,39 @@ const ScheduledRides = () => {
     getPlannedRoutes(setData, state);
   }, []);
 
+  const handleStartRide = async (item) => {
+    const { createTrack } = useTrackApi();
+    console.log(item);
+    const result = await createTrack({ uuid: item.id, status: "started" });
+    if (!result) {
+      console.log("createTrack error");
+      //handle rerror;
+      return;
+    }
+    dispatch({
+      type: "SET_TRACK",
+      payload: result.id
+    })
+    dispatch({
+      type: "MODIFY_STAGE",
+      payload: {
+        ...state.stage,
+        display: "drive",
+      },
+    });
+
+    navigation.navigate("Home");
+  };
+
   const renderItem = ({ item }) => (
-    <List style={{ paddingTop: 20, paddingBottom: 20, borderWidth: 0, borderColor: "muted.300"}}>
+    <List
+      style={{
+        paddingTop: 20,
+        paddingBottom: 20,
+        borderWidth: 0,
+        borderColor: "muted.300",
+      }}
+    >
       <View style={{ marginLeft: 15 }}>
         <View flexDirection="row" style={{ marginBottom: 5 }}></View>
         <View flexDirection="row" style={{ marginBottom: 5 }}>
@@ -171,6 +202,11 @@ const ScheduledRides = () => {
         </View>
 
         <Text>{item.name}</Text>
+        {item.status == "Booked" && (
+          <Button variant="outline" onPress={() => handleStartRide(item)}>
+            Start Ride
+          </Button>
+        )}
       </View>
     </List>
   );

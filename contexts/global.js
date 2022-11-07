@@ -31,6 +31,7 @@ const initialState = {
   },
   token: null,
   driver: null,
+  tracker: null
 };
 const initState = () => initialState;
 const globalReducer = (state, action) => {
@@ -60,6 +61,11 @@ const globalReducer = (state, action) => {
         ...state,
         token: action.payload,
       };
+    case "SET_TRACK":
+    return {
+        ...state, 
+        tracker: action.payload,
+      }
     default:
       return state;
   }

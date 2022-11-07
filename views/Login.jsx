@@ -37,59 +37,50 @@ const Login = ({ navigation }) => {
       }
       return;
     }
-    
-    let authNRes = await loginUser();
-    let token = authNRes.authToken;
-    let email = authNRes.email;
+
+    let { token, email } = await loginUser();
 
     if (!token) {
       //handle invalid user
       console.log("Invalid user");
       return;
     }
-
-    let user = await useUserApi(token).getUser(email);
+    const { getUser, getUserByUuid } = useUserApi(token);
+    let user = await getUser(email);
     if (!user) {
       //this one hong gan lo
       return;
     }
 
-    await SecureStore.setItemAsync(
-      "idToken",
-      JSON.stringify(token).replace(/['"]+/g, "")
-    );
-    console.log(user.id)
-    await SecureStore.setItemAsync(
-      "uuid",
-      JSON.stringify(user.id).replace(/['"]+/g, '')
-    );
-
-    if (user.isDriver === true) {
-      let fullUser = await useUserApi(token).getFullUserByUuid(JSON.stringify(user.id).replace(/['"]+/g, ''));
-      await SecureStore.setItemAsync(
-        "carPlate",
-        JSON.stringify(fullUser.driver.carPlate).replace(/['"]+/g, '')
-      );
-      
-      dispatch({ type: "SET_USER", payload: user });
-      dispatch({
-        type: "MODIFY_STAGE",
-        payload: {
-          ...state.stage,
-          locationSearch: {
-            text: `Where to, ${user.name}?`,
-          },
-        },
-      });
-      dispatch({
-        type: "SET_TOKEN",
-        payload: token,
-      });
-
-      navigation.navigate("Home");
-    } else {
+    if (!user.isDriver) {
       navigation.navigate("RegisterDriver");
+      return;
     }
+
+    //get more details
+    let data = await getUserByUuid(user.id);
+    //TODO handle invalid
+    if(!data){
+      return;
+    }
+
+    dispatch({ type: "SET_USER", payload: data });
+    dispatch({
+      type: "MODIFY_STAGE",
+      payload: {
+        ...state.stage,
+        locationSearch: {
+          text: `New drive, ${user.name}?`,
+        },
+      },
+    });
+    dispatch({
+      type: "SET_TOKEN",
+      payload: token,
+    });
+
+    navigation.navigate("Home");
+    await SecureStore.setItemAsync("idToken", token);
   };
 
   return (

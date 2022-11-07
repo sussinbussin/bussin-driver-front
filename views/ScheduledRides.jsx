@@ -47,8 +47,10 @@ const getPlannedRoutes = async (setData, state) => {
   const plannedRoutes = driver.plannedRoutes;
   let routes = [];
   for (let i = 0; i < plannedRoutes.length; i++) {
-    plannedRoutes[i].dateTime[1] -= 1;
-    let date = dayjs(plannedRoutes[i].dateTime.slice(0, 5));
+    plannedRoutes[i].dateTime[1] -= 1; 
+    plannedRoutes[i].dateTime[3] += 8; 
+    let date = dayjs(plannedRoutes[i].dateTime.slice(0,5));
+    console.log(date);
     let status = "";
     if (plannedRoutes[i].rides.length == 0) {
       if (date < today) {

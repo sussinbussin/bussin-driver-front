@@ -15,7 +15,6 @@ import { useContext, useEffect, useState } from "react";
 import { StyleSheet, Keyboard } from "react-native";
 import { GlobalContext } from "../contexts/global";
 import dayjs from "dayjs";
-import * as SecureStore from "expo-secure-store";
 import { usePlannedRouteApi } from "../api/PlannedRouteApi";
 import { useNavigation } from "@react-navigation/native";
 
@@ -208,4 +207,3 @@ const styles = StyleSheet.create({
   },
 });
 export default PlanningRoute;
-

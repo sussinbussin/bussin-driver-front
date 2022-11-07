@@ -177,7 +177,7 @@ const Login = ({ navigation }) => {
           </Text>
           <Text
             onPress={() => {
-              navigation.navigate("Register");
+              navigation.navigate("RegisterNew");
             }}
             textAlign="center"
             paddingTop="7.5"

@@ -147,7 +147,7 @@ import {
     return (
       <Box style={{ ...styles.map, marginTop: keyboardStatus ? 0 : "auto" }}>
         <Input
-          placeholder={state.stage.locationSearch.text}
+          placeholder={"Where To?"}
           style={styles.input}
           variant="underlined"
           size="lg"

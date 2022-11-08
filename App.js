@@ -18,6 +18,7 @@ import Profile from "./views/Profile";
 import RegisterName from "./views/RegisterName";
 import RegisterEmailNRIC from "./views/RegisterEmailNRIC";
 import RegisterDriver from "./views/RegisterDriver"
+import RegisterNew from "./views/RegisterNew";
 import ScheduledRides from "./views/ScheduledRides";
 import VehicleSettings from "./views/VehicleSettings";
 
@@ -40,6 +41,7 @@ const App = () => {
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="RegisterNew" component={RegisterNew} />
             <Stack.Screen name="RegisterName" component={RegisterName} />
             <Stack.Screen name="RegisterEmailNRIC" component={RegisterEmailNRIC} />
             <Stack.Screen name="RegisterDriver" component={RegisterDriver} />

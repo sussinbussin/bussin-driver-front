@@ -5,6 +5,7 @@ const flags = {
   requireLogin: false,
   register: true,
   profile: true,
+  editProfile: true,
   registerName: true,
   scheduledRides: true,
 };

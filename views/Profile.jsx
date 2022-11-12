@@ -33,13 +33,17 @@ const Profile = () => {
   return (
     <View>
       <TopBarBack></TopBarBack>
-      <Pressable>
+      <Pressable
+        onPress={() => {
+          navigation.navigate("EditProfile");
+        }}
+      >
         <Flex style={{ marginTop: 5, marginBottom: 5 }} flexDirection="row">
           <View>
             <AntDesign
               name="user"
               size={60}
-              color="pink"
+              color="white"
               style={{ marginLeft: 25, marginRight: 25 }}
             />
           </View>

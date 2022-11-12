@@ -77,16 +77,13 @@ const Login = ({ navigation }) => {
     }
 
     let { token, email } = await loginUser();
-    console.log(token);
     if (!token) {
       //handle invalid user
-      console.log("Invalid user");
       return;
     }
     const { getUser, getFullUserByUuid } = useUserApi(token);
     let user = await getUser(email);
     if (!user) {
-      //this one hong gan lo
       return;
     }
 
@@ -97,8 +94,6 @@ const Login = ({ navigation }) => {
 
     //get more details
     let data = await getFullUserByUuid(user.id);
-    console.log(data);
-    //TODO handle invalid
     if (!data) {
       return;
     }

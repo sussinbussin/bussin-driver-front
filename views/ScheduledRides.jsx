@@ -1,30 +1,13 @@
-import {
-  Text,
-  Box,
-  Button,
-  Heading,
-  FormControl,
-  Input,
-  Stack,
-  Center,
-  View,
-  Pressable,
-  Flex,
-  List,
-  FlatList,
-} from "native-base";
+import { Text, Box, Button, View, List, FlatList } from "native-base";
 import { useContext, useState, useEffect } from "react";
 import TopBarBack from "../components/TopBarBack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { GlobalContext } from "../contexts/global";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import * as SecureStore from "expo-secure-store";
 import { useDriverApi } from "../api/DriverApi";
 import dayjs from "dayjs";
 import arraySupport from "dayjs/plugin/arraySupport";
-import timezone from "dayjs/plugin/timezone";
-import utc from "dayjs/plugin/utc";
 import { useTrackApi } from "../api/TrackApi";
 
 function compare(a, b) {
@@ -52,6 +35,8 @@ const getPlannedRoutes = async (setData, state) => {
     plannedRoutes[i].dateTime[3] += 8;
     let date = dayjs(plannedRoutes[i].dateTime.slice(0, 5));
     let status = "";
+
+    // check status for each ride
     if (plannedRoutes[i].rides.length == 0) {
       if (date < today) {
         status = "Expired";
@@ -84,8 +69,7 @@ const ScheduledRides = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
-  // for dynamic rendering or smth idk
-  const [selectedId, setSelectedId] = useState(null);
+  // for dynamic rendering
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -103,8 +87,8 @@ const ScheduledRides = () => {
     }
     dispatch({
       type: "SET_TRACK",
-      payload: result.id
-    })
+      payload: result.id,
+    });
     dispatch({
       type: "MODIFY_STAGE",
       payload: {
@@ -139,12 +123,6 @@ const ScheduledRides = () => {
           <Text fontSize="md" style={{ marginRight: 23 }}>
             To:
           </Text>
-          {/* <AntDesign
-            name="arrowright"
-            size={20}
-            color="white"
-            style={{ marginLeft: 5, marginRight: 5, marginTop: 2.5 }}
-          /> */}
           <Text fontSize="md" fontWeight="bold" isTruncated maxWidth={280}>
             {item.to}
           </Text>
@@ -211,20 +189,6 @@ const ScheduledRides = () => {
     </List>
   );
 
-  const deleteItem = (itemId) => {};
-
-  const QuickActions = (qaItem) => {
-    return (
-      <View>
-        <View>
-          <Pressable onPress={() => deleteItem(qaItem.id)}>
-            <Text>Delete</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  };
-
   return (
     <View>
       <TopBarBack></TopBarBack>
@@ -252,7 +216,6 @@ const ScheduledRides = () => {
         }}
         extraData
       />
-      {/* padding thing idk how change */}
       <Box style={{ height: 100 }}></Box>
     </View>
   );

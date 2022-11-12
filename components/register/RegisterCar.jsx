@@ -8,12 +8,9 @@ import {
   Button,
 } from "native-base";
 import { useContext, useState } from "react";
-import { useRegisterApi } from "../../api/RegisterApi";
 import { RegisterContext } from "../../contexts/register";
 import TopBarBack from "../TopBarBack";
 import DropdownPicker from "react-native-dropdown-picker";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import dayjs from "dayjs";
 
 const RegisterDetails = ({ navigation }) => {
   const state = useContext(RegisterContext);
@@ -47,15 +44,13 @@ const RegisterDetails = ({ navigation }) => {
     { label: "Diesel", value: "Diesel" },
   ]);
 
-    const [displayCarPlateError, setDisplayCarPlateError] = useState(false);
-    const [displayModelanColourError, setDisplayMobileAndColourError] = useState(false);
-    const [displayCapacityError, setDisplayCapacityError] = useState(false);
-    const [displayNricError, setDisplayFuelTypeError] = useState(false);
-
+  const [displayCarPlateError, setDisplayCarPlateError] = useState(false);
+  const [displayModelanColourError, setDisplayMobileAndColourError] =
+    useState(false);
+  const [displayCapacityError, setDisplayCapacityError] = useState(false);
+  const [displayNricError, setDisplayFuelTypeError] = useState(false);
 
   const handleNext = async () => {
-    //TODO: implement check
-
     const formData = {
       carPlate: carPlate,
       modelAndColour: modelAndColour,
@@ -63,16 +58,9 @@ const RegisterDetails = ({ navigation }) => {
       fuelType: fuelType,
     };
 
-      const result = await check(formData);
-      console.log(result);
-      let error = false;
+    const result = await check(formData);
+    let error = false;
 
-    // check uniqueness
-
-
-    // set state
-
-    
     navigation.navigate("RegisterPassword");
   };
 
@@ -130,7 +118,7 @@ const RegisterDetails = ({ navigation }) => {
         </FormControl>
 
         <FormControl.Label style={{ alignItems: "center" }}>
-        Capacity
+          Capacity
         </FormControl.Label>
         <DropdownPicker
           open={capacityOpen}

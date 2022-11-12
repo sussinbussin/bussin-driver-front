@@ -16,7 +16,6 @@ const useDriverApi = (token) => {
           data = await res.json();
           return data;
         } catch (error) {
-          console.log(error);
           return data;
         }
     }
@@ -28,7 +27,6 @@ const useDriverApi = (token) => {
               json: driverDTO,
             });
             data = await res.json();
-            console.log(data);
             return data;
           } catch (error) {
             return;
@@ -40,7 +38,6 @@ const useDriverApi = (token) => {
       try {
           const res = await api.post(`driver/${uuid}`, {json: driverDTO});
           data = await res.json();
-          console.log(data);
           return data;
       } catch (error) {
           return;

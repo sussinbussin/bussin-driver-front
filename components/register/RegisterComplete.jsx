@@ -1,13 +1,12 @@
 import { View, Heading, Text } from "native-base";
 import Lottie from "lottie-react-native";
 import TopBar from "../TopBar";
-import { useEffect, useRef, Animated, useContext } from "react";
+import { useEffect, useRef, useContext } from "react";
 import { useRegisterApi } from "../../api/RegisterApi";
 import { RegisterContext } from "../../contexts/register";
 import { useLoginApi } from "../../api/LoginApi";
 import { useUserApi } from "../../api/UsersApi";
 import * as SecureStore from "expo-secure-store";
-import * as LocalAuthentication from "expo-local-authentication";
 import { GlobalContext } from "../../contexts/global";
 
 const RegisterComplete = ({ navigation }) => {
@@ -30,9 +29,9 @@ const RegisterComplete = ({ navigation }) => {
           isDriver: true,
         },
       };
-      const {register} = useRegisterApi()
+      const { register } = useRegisterApi();
       let result = await register(formData);
-      if (!result) return; //TODO handle error
+      if (!result) return;
     })();
     animation.current?.play();
   }, []);
@@ -43,13 +42,11 @@ const RegisterComplete = ({ navigation }) => {
       registerState.password
     );
     let { token, email } = await loginUser();
-    console.log(token,email);
     if (!token) {
       return;
     }
     const { getUser } = useUserApi(token);
     let user = await getUser(email);
-    console.log(`user: ${user}`);
     if (!user) {
       return;
     }

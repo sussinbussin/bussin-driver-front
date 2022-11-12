@@ -8,7 +8,7 @@ const RegisterPassword = ({ navigation }) => {
   const state = useContext(RegisterContext);
 
   const handleNext = () => {
-    //TODO: handle invalid passwords properly with error messages
+    // basic check for valid password
     if (password1.length == 0) return;
     if (password1 !== password2) {
       setPassword1("");

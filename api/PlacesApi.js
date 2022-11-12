@@ -11,7 +11,7 @@ const usePlacesAPI = (query) => {
           locationbias: "ipbias",
         })
     );
-    const result = await res.json(); //todo: error checking
+    const result = await res.json(); 
     return result;
   };
 

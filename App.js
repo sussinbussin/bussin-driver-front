@@ -14,6 +14,7 @@ import darkModeTheme from "./theming/dark";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Profile from "./views/Profile";
+import EditProfile from "./views/EditProfile";
 import RegisterNew from "./views/RegisterNew";
 import ScheduledRides from "./views/ScheduledRides";
 import VehicleSettings from "./views/VehicleSettings";
@@ -36,6 +37,7 @@ const App = () => {
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="EditProfile" component={EditProfile} />
             <Stack.Screen name="RegisterNew" component={RegisterNew} />
             <Stack.Screen name="ScheduledRides" component={ScheduledRides} />
             <Stack.Screen name="VehicleSettings" component={VehicleSettings} />

@@ -83,7 +83,6 @@ const EditProfile = () => {
       // if user...
       if (user) {
         setButtonMessage("Profile updated!");
-        navigation.navigate("Home");
         dispatch({
           type: "MODIFY_STAGE",
           payload: {

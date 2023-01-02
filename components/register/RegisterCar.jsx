@@ -57,11 +57,9 @@ const RegisterDetails = ({ navigation }) => {
       capacity: capacity,
       fuelType: fuelType,
     };
+    state.driverDto = formData;
 
-    const result = await check(formData);
-    let error = false;
-
-    navigation.navigate("RegisterPassword");
+    navigation.navigate("RegisterComplete");
   };
 
   return (

@@ -16,7 +16,8 @@ const RegisterPassword = ({ navigation }) => {
       return;
     }
     state.password = password1;
-    navigation.navigate("RegisterComplete");
+
+    navigation.navigate("RegisterCar");
   };
   return (
     <View style={{ flex: 1, alignItems: "center" }}>

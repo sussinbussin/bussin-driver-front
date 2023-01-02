@@ -3,6 +3,7 @@ import Lottie from "lottie-react-native";
 import TopBar from "../TopBar";
 import { useEffect, useRef, useContext } from "react";
 import { useRegisterApi } from "../../api/RegisterApi";
+import { useDriverApi } from "../../api/DriverApi";
 import { RegisterContext } from "../../contexts/register";
 import { useLoginApi } from "../../api/LoginApi";
 import { useUserApi } from "../../api/UsersApi";
@@ -32,6 +33,17 @@ const RegisterComplete = ({ navigation }) => {
       const { register } = useRegisterApi();
       let result = await register(formData);
       if (!result) return;
+
+      const { loginUser } = useLoginApi(
+        registerState.username,
+        registerState.password
+      );
+      let { token } = await loginUser();
+
+      await SecureStore.setItemAsync("token", token);
+
+      const { createDriver } = useDriverApi(token);
+      await createDriver(result.id, registerState.driverDto);
     })();
     animation.current?.play();
   }, []);
@@ -51,6 +63,8 @@ const RegisterComplete = ({ navigation }) => {
       return;
     }
 
+    await SecureStore.setItemAsync("uuid", user.id)
+
     dispatch({ type: "SET_USER", payload: user });
     dispatch({
       type: "MODIFY_STAGE",
@@ -65,6 +79,8 @@ const RegisterComplete = ({ navigation }) => {
       type: "SET_TOKEN",
       payload: token,
     });
+
+    dispatch({ type: "SET_DRIVER", payload: user });
 
     await SecureStore.setItemAsync("idToken", token);
     navigation.navigate("Home");

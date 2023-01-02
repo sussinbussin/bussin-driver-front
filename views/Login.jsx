@@ -50,6 +50,7 @@ const Login = ({ navigation }) => {
       const { getUser } = useUserApi(token);
       let user = await getUser(decodedToken.email);
       if (!user) return;
+
       dispatch({ type: "SET_DRIVER", payload: user });
       dispatch({
         type: "MODIFY_STAGE",
@@ -97,6 +98,8 @@ const Login = ({ navigation }) => {
     if (!data) {
       return;
     }
+
+    await SecureStore.setItemAsync("uuid", user.id)
 
     dispatch({ type: "SET_DRIVER", payload: data });
     dispatch({

@@ -83,7 +83,7 @@ import {
       state.mobile = mobile;
       state.username = username;
       state.date = date;
-      navigation.navigate("RegisterCar");
+      navigation.navigate("RegisterPassword");
     };
   
     return (

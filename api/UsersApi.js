@@ -58,7 +58,20 @@ const useUserApi = (token) => {
     }
   };
 
-  return { getUser, createUser, getFullUserByUuid, getUserByUuid };
+  const updateUser = async (userId, userDTO) => {
+    let data = null;
+    try {
+      const res = await api.put(`users/${userId}`, {
+        json: userDTO,
+      });
+      data = await res.json();
+      return data;
+    } catch (error) {
+      return;
+    }
+  };
+
+  return { getUser, createUser, getFullUserByUuid, getUserByUuid, updateUser};
 };
 
 export { useUserApi };

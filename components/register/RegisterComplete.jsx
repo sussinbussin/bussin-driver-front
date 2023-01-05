@@ -57,7 +57,7 @@ const RegisterComplete = ({ navigation }) => {
     if (!token) {
       return;
     }
-    const { getUser } = useUserApi(token);
+    const { getUser, getFullUserByUuid } = useUserApi(token);
     let user = await getUser(email);
     if (!user) {
       return;
@@ -83,6 +83,9 @@ const RegisterComplete = ({ navigation }) => {
     dispatch({ type: "SET_DRIVER", payload: user });
 
     await SecureStore.setItemAsync("idToken", token);
+
+    let data = await getFullUserByUuid(user.id);
+    await SecureStore.setItemAsync("carPlate", data.driver.carPlate)
     navigation.navigate("Home");
   };
 

@@ -9,6 +9,7 @@ import { useDriverApi } from "../api/DriverApi";
 import dayjs from "dayjs";
 import arraySupport from "dayjs/plugin/arraySupport";
 import { useTrackApi } from "../api/TrackApi";
+import * as SecureStore from "expo-secure-store";
 
 function compare(a, b) {
   return new Date(b.date) - new Date(a.date);
@@ -16,7 +17,7 @@ function compare(a, b) {
 
 const getPlannedRoutes = async (setData, state) => {
   const idToken = state.token;
-  const carPlate = state.driver.driver.carPlate;
+  const carPlate = await SecureStore.getItemAsync("carPlate")
 
   let today = dayjs();
   dayjs.extend(arraySupport);

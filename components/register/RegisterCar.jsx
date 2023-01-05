@@ -17,8 +17,8 @@ const RegisterDetails = ({ navigation }) => {
 
   const [carPlate, setCarPlate] = useState("");
   const [modelAndColour, setModelAndColour] = useState("");
-  const [capacity, setCapacity] = useState("");
-  const [fuelType, setFuelType] = useState("");
+  const [capacity, setCapacity] = useState("4");
+  const [fuelType, setFuelType] = useState("92");
 
   const [capacityOpen, setCapacityOpen] = useState(false);
   const [capacityItems, setCapacityItems] = useState([

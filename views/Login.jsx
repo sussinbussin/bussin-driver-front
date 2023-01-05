@@ -100,6 +100,7 @@ const Login = ({ navigation }) => {
     }
 
     await SecureStore.setItemAsync("uuid", user.id)
+    await SecureStore.setItemAsync("carPlate", data.driver.carPlate)
 
     dispatch({ type: "SET_DRIVER", payload: data });
     dispatch({

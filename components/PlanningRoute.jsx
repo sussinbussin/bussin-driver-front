@@ -17,6 +17,7 @@ import { GlobalContext } from "../contexts/global";
 import dayjs from "dayjs";
 import { usePlannedRouteApi } from "../api/PlannedRouteApi";
 import { useNavigation } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
 
 const PlanningRoute = () => {
   const { state, dispatch } = useContext(GlobalContext);
@@ -87,7 +88,7 @@ const PlanningRoute = () => {
    * Planning
    * */
   const handlePlan = async () => {
-    const carPlate = state.driver.driver.carPlate;
+    const carPlate = await SecureStore.getItemAsync("carPlate")
 
     let plannedRouteDTO = {
       id: "",
@@ -103,6 +104,7 @@ const PlanningRoute = () => {
 
     const { createPlannedRoute } = usePlannedRouteApi(state.token);
     let plannedRoute = await createPlannedRoute(plannedRouteDTO, carPlate);
+    
     if (plannedRoute) {
       console.log(plannedRoute);
       navigation.navigate("ScheduledRides");
